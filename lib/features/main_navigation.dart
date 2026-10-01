@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'home/home_page.dart';
 import 'chat_page.dart';
 import 'favorite_page.dart';
 import 'profile_page.dart';
@@ -14,6 +16,7 @@ class _MainNavigationState extends State<MainNavigation> {
   int _index = 0;
 
   final List<Widget> _pages = [
+    HomePage(),
     const ChatPage(),
     const FavoritPage(),
     const ProfilePage(),
@@ -27,7 +30,10 @@ class _MainNavigationState extends State<MainNavigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: IndexedStack(index: _index, children: _pages),
+        child: IndexedStack(
+          index: _index,
+          children: _pages,
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
