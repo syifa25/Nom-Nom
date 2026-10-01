@@ -1,6 +1,7 @@
+
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:nom_nom/features/home/home_page.dart';
+import 'package:nom_nom/features/home/main_navigation.dart';
 
 void main() {
   runApp(const NomNomApp());
@@ -26,16 +27,17 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
 
     Timer(const Duration(seconds: 2), () {
+      if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => const MainNavigation(),
         ),
       );
     });
@@ -53,9 +55,7 @@ class _SplashScreenState extends State<SplashScreen> {
               'assets/logo_nomnom.png',
               width: 250,
             ),
-
             const SizedBox(height: 20),
-
             const Text(
               'Masak jadi lebih mudah',
               style: TextStyle(
@@ -70,4 +70,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-

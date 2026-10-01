@@ -122,7 +122,7 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                     border: msg.isUser
                         ? null
-                        : Border.all(color: AppColors.textSecondary.withOpacity(0.15)),
+                        : Border.all(color: AppColors.textSecondary.withValues(alpha: 0.15)),
                   ),
                   child: Text(
                     msg.text,
@@ -151,7 +151,7 @@ class _ChatPageState extends State<ChatPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                       borderSide:
-                      BorderSide(color: AppColors.textSecondary.withOpacity(0.2)),
+                      BorderSide(color: AppColors.textSecondary.withValues(alpha: 0.2)),
                     ),
                   ),
                   onSubmitted: (_) => _send(),
