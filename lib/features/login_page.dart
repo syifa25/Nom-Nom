@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../service/auth_service.dart';
 
+import '../theme/app_colors.dart';
 import 'home/main_navigation.dart';
 import 'register_page.dart';
 

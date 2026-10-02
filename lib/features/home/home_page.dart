@@ -31,147 +31,147 @@ class _HomePageState extends State<HomePage> {
   ];
 
   final List<Map<String, dynamic>> recipes = [
-  {
-    'name': 'Nasi Goreng',
-    'category': 'Makanan utama',
-    'time': '20 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/nasi_goreng.jpg',
-  },
-  {
-    'name': 'Mie Goreng',
-    'category': 'Makanan utama',
-    'time': '20 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/mie_goreng.jpg',
-  },
-  {
-    'name': 'Ayam Goreng',
-    'category': 'Makanan utama',
-    'time': '35 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/ayam_goreng.jpg',
-  },
-  {
-    'name': 'Ayam Bakar',
-    'category': 'Makanan utama',
-    'time': '45 menit',
-    'rating': '4.9',
-    'image': 'assets/menu/ayam_bakar.jpg',
-  },
-  {
-    'name': 'Rendang',
-    'category': 'Makanan utama',
-    'time': '90 menit',
-    'rating': '4.9',
-    'image': 'assets/menu/rendang.jpg',
-  },
-  {
-    'name': 'Soto Ayam',
-    'category': 'Makanan utama',
-    'time': '40 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/soto_ayam.jpg',
-  },
-  {
-    'name': 'Bakso',
-    'category': 'Makanan utama',
-    'time': '30 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/bakso.jpg',
-  },
-  {
-    'name': 'Seblak',
-    'category': 'Camilan',
-    'time': '25 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/seblak.jpg',
-  },
-  {
-    'name': 'Capcay',
-    'category': 'Makanan utama',
-    'time': '25 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/capcay.jpg',
-  },
-  {
-    'name': 'Sayur Asem',
-    'category': 'Makanan utama',
-    'time': '30 menit',
-    'rating': '4.6',
-    'image': 'assets/menu/sayur_asem.jpg',
-  },
-  {
-    'name': 'Gado-Gado',
-    'category': 'Makanan utama',
-    'time': '25 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/gado_gado.jpg',
-  },
-  {
-    'name': 'Kwetiau Goreng',
-    'category': 'Makanan utama',
-    'time': '25 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/kwetiau_goreng.jpg',
-  },
-  {
-    'name': 'Spaghetti Bolognese',
-    'category': 'Makanan utama',
-    'time': '30 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/spaghetti_bolognese.jpg',
-  },
-  {
-    'name': 'Macaroni Schotel',
-    'category': 'Makanan utama',
-    'time': '45 menit',
-    'rating': '4.9',
-    'image': 'assets/menu/macaroni_schotel.jpg',
-  },
-  {
-    'name': 'Pancake',
-    'category': 'Sarapan',
-    'time': '15 menit',
-    'rating': '4.9',
-    'image': 'assets/menu/pancake.jpg',
-  },
-  {
-    'name': 'French Toast',
-    'category': 'Sarapan',
-    'time': '15 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/french_toast.jpg',
-  },
-  {
-    'name': 'Omelet',
-    'category': 'Sarapan',
-    'time': '10 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/omelet.jpg',
-  },
-  {
-    'name': 'Sup Ayam',
-    'category': 'Makanan utama',
-    'time': '35 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/sup_ayam.jpg',
-  },
-  {
-    'name': 'Tumis Kangkung',
-    'category': 'Makanan utama',
-    'time': '15 menit',
-    'rating': '4.6',
-    'image': 'assets/menu/tumis_kangkung.jpg',
-  },
-  {
-    'name': 'Pisang Goreng',
-    'category': 'Camilan',
-    'time': '15 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/pisang_goreng.jpg',
-  },
-];
+    {
+      'name': 'Nasi Goreng',
+      'category': 'Makanan utama',
+      'time': '20 menit',
+      'rating': '4.8',
+      'image': 'assets/menu/nasi_goreng.jpg',
+    },
+    {
+      'name': 'Mie Goreng',
+      'category': 'Makanan utama',
+      'time': '20 menit',
+      'rating': '4.7',
+      'image': 'assets/menu/mie_goreng.jpg',
+    },
+    {
+      'name': 'Ayam Goreng',
+      'category': 'Makanan utama',
+      'time': '35 menit',
+      'rating': '4.8',
+      'image': 'assets/menu/ayam_goreng.jpg',
+    },
+    {
+      'name': 'Ayam Bakar',
+      'category': 'Makanan utama',
+      'time': '45 menit',
+      'rating': '4.9',
+      'image': 'assets/menu/ayam_bakar.jpg',
+    },
+    {
+      'name': 'Rendang',
+      'category': 'Makanan utama',
+      'time': '90 menit',
+      'rating': '4.9',
+      'image': 'assets/menu/rendang.jpg',
+    },
+    {
+      'name': 'Soto Ayam',
+      'category': 'Makanan utama',
+      'time': '40 menit',
+      'rating': '4.8',
+      'image': 'assets/menu/soto_ayam.jpg',
+    },
+    {
+      'name': 'Bakso',
+      'category': 'Makanan utama',
+      'time': '30 menit',
+      'rating': '4.7',
+      'image': 'assets/menu/bakso.jpg',
+    },
+    {
+      'name': 'Seblak',
+      'category': 'Camilan',
+      'time': '25 menit',
+      'rating': '4.8',
+      'image': 'assets/menu/seblak.jpg',
+    },
+    {
+      'name': 'Capcay',
+      'category': 'Makanan utama',
+      'time': '25 menit',
+      'rating': '4.7',
+      'image': 'assets/menu/capcay.jpg',
+    },
+    {
+      'name': 'Sayur Asem',
+      'category': 'Makanan utama',
+      'time': '30 menit',
+      'rating': '4.6',
+      'image': 'assets/menu/sayur_asem.jpg',
+    },
+    {
+      'name': 'Gado-Gado',
+      'category': 'Makanan utama',
+      'time': '25 menit',
+      'rating': '4.8',
+      'image': 'assets/menu/gado_gado.jpg',
+    },
+    {
+      'name': 'Kwetiau Goreng',
+      'category': 'Makanan utama',
+      'time': '25 menit',
+      'rating': '4.7',
+      'image': 'assets/menu/kwetiau_goreng.jpg',
+    },
+    {
+      'name': 'Spaghetti Bolognese',
+      'category': 'Makanan utama',
+      'time': '30 menit',
+      'rating': '4.8',
+      'image': 'assets/menu/spaghetti_bolognese.jpg',
+    },
+    {
+      'name': 'Macaroni Schotel',
+      'category': 'Makanan utama',
+      'time': '45 menit',
+      'rating': '4.9',
+      'image': 'assets/menu/macaroni_schotel.jpg',
+    },
+    {
+      'name': 'Pancake',
+      'category': 'Sarapan',
+      'time': '15 menit',
+      'rating': '4.9',
+      'image': 'assets/menu/pancake.jpg',
+    },
+    {
+      'name': 'French Toast',
+      'category': 'Sarapan',
+      'time': '15 menit',
+      'rating': '4.7',
+      'image': 'assets/menu/french_toast.jpg',
+    },
+    {
+      'name': 'Omelet',
+      'category': 'Sarapan',
+      'time': '10 menit',
+      'rating': '4.7',
+      'image': 'assets/menu/omelet.jpg',
+    },
+    {
+      'name': 'Sup Ayam',
+      'category': 'Makanan utama',
+      'time': '35 menit',
+      'rating': '4.8',
+      'image': 'assets/menu/sup_ayam.jpg',
+    },
+    {
+      'name': 'Tumis Kangkung',
+      'category': 'Makanan utama',
+      'time': '15 menit',
+      'rating': '4.6',
+      'image': 'assets/menu/tumis_kangkung.jpg',
+    },
+    {
+      'name': 'Pisang Goreng',
+      'category': 'Camilan',
+      'time': '15 menit',
+      'rating': '4.7',
+      'image': 'assets/menu/pisang_goreng.jpg',
+    },
+  ];
 
   List<Map<String, dynamic>> get filteredRecipes {
     return recipes.where((recipe) {
@@ -379,7 +379,7 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 12),
 
-              // Lista Resep
+              // Daftar Resep
               Expanded(
                 child: filteredRecipes.isEmpty
                     ? const Center(
@@ -426,20 +426,30 @@ class _HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                height: 145,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: yellowColor.withOpacity(0.35),
-                                  borderRadius:
-                                  const BorderRadius.vertical(
-                                    top: Radius.circular(15),
-                                  ),
+                              ClipRRect(
+                                borderRadius:
+                                const BorderRadius.vertical(
+                                  top: Radius.circular(15),
                                 ),
-                                child: Icon(
-                                  recipe['icon'] as IconData,
-                                  size: 65,
-                                  color: brownColor,
+                                child: Image.asset(
+                                  recipe['image'] as String,
+                                  width: double.infinity,
+                                  height: 145,
+                                  fit: BoxFit.cover,
+                                  errorBuilder:
+                                      (context, error, stackTrace) {
+                                    return Container(
+                                      height: 145,
+                                      width: double.infinity,
+                                      color: yellowColor
+                                          .withValues(alpha: 0.35),
+                                      child: const Icon(
+                                        Icons.restaurant,
+                                        size: 50,
+                                        color: brownColor,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                               Padding(
@@ -463,32 +473,6 @@ class _HomePageState extends State<HomePage> {
                                           Icons.star,
                                           size: 17,
                                           color: yellowColor,
-                              children: [
-                                // Area gambar sementara
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(15),
-                                  ),
-                                  child: Image.asset(
-                                    recipe['image'] as String,
-                                    width: double.infinity,
-                                    height: 145,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.all(14),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        recipe['name'] as String,
-                                        style: const TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
-                                          color: brownColor,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
