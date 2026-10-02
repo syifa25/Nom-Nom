@@ -40,7 +40,7 @@ class FavoritPage extends StatelessWidget {
                   color: AppColors.cardBg,
                   borderRadius: BorderRadius.circular(14),
                   border:
-                  Border.all(color: AppColors.textSecondary.withOpacity(0.12)),
+                  Border.all(color: AppColors.textSecondary.withValues(alpha: 0.12)),
                 ),
                 child: Stack(
                   children: [
@@ -83,7 +83,7 @@ class FavoritPage extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.favorite,
