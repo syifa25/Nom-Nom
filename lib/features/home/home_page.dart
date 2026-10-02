@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:nom_nom/service/auth_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,8 +9,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController _searchController =
-      TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   String selectedCategory = 'Semua';
   String searchQuery = '';
@@ -105,17 +104,13 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-
-      // Navbar yang sudah ada tetap dipertahankan.
-      
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Sapaan pengguna
+              // Sapaan pengguna (Dinamis mengambil data dari AuthService)
               Row(
                 children: [
                   const CircleAvatar(
@@ -128,19 +123,19 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hai, Budi!',
-                        style: TextStyle(
+                        'Hai, ${AuthService.instance.currentUserName ?? 'User'}!',
+                        style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: brownColor,
                         ),
                       ),
-                      SizedBox(height: 3),
-                      Text(
+                      const SizedBox(height: 3),
+                      const Text(
                         'Mau masak apa hari ini?',
                         style: TextStyle(
                           fontSize: 13,
@@ -184,14 +179,14 @@ class _HomePageState extends State<HomePage> {
                     ),
                     suffixIcon: searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {
-                                searchQuery = '';
-                              });
-                            },
-                          )
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {
+                          searchQuery = '';
+                        });
+                      },
+                    )
                         : null,
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
@@ -222,11 +217,10 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: categories.length,
                   separatorBuilder: (context, index) =>
-                      const SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   itemBuilder: (context, index) {
                     final category = categories[index];
-                    final isSelected =
-                        selectedCategory == category;
+                    final isSelected = selectedCategory == category;
 
                     return ChoiceChip(
                       label: Text(category),
@@ -239,9 +233,7 @@ class _HomePageState extends State<HomePage> {
                       backgroundColor: Colors.white,
                       selectedColor: primaryColor,
                       labelStyle: TextStyle(
-                        color: isSelected
-                            ? Colors.white
-                            : brownColor,
+                        color: isSelected ? Colors.white : brownColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
@@ -293,145 +285,140 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: filteredRecipes.isEmpty
                     ? const Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.search_off,
-                              size: 55,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              'Resep tidak ditemukan',
-                              style: TextStyle(
-                                color: brownColor,
-                                fontSize: 15,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Coba kategori atau kata kunci lain.',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.search_off,
+                        size: 55,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Resep tidak ditemukan',
+                        style: TextStyle(
+                          color: brownColor,
+                          fontSize: 15,
                         ),
-                      )
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Coba kategori atau kata kunci lain.',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
                     : ListView.separated(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        itemCount: filteredRecipes.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 14),
-                        itemBuilder: (context, index) {
-                          final recipe = filteredRecipes[index];
+                  padding: const EdgeInsets.only(bottom: 16),
+                  itemCount: filteredRecipes.length,
+                  separatorBuilder: (context, index) =>
+                  const SizedBox(height: 14),
+                  itemBuilder: (context, index) {
+                    final recipe = filteredRecipes[index];
 
-                          return Container(
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFE8D8C8),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 145,
+                            width: double.infinity,
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: const Color(0xFFE8D8C8),
+                              color: yellowColor.withValues(
+                                alpha: 0.35,
+                              ),
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(15),
                               ),
                             ),
+                            child: Icon(
+                              recipe['icon'] as IconData,
+                              size: 65,
+                              color: brownColor,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(14),
                             child: Column(
                               crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              CrossAxisAlignment.start,
                               children: [
-                                // Area gambar sementara
-                                Container(
-                                  height: 145,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: yellowColor.withValues(
-                                      alpha: 0.35,
-                                    ),
-                                    borderRadius:
-                                        const BorderRadius.vertical(
-                                      top: Radius.circular(15),
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    recipe['icon'] as IconData,
-                                    size: 65,
+                                Text(
+                                  recipe['name'] as String,
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
                                     color: brownColor,
                                   ),
                                 ),
-
-                                Padding(
-                                  padding: const EdgeInsets.all(14),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        recipe['name'] as String,
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.star,
+                                      size: 17,
+                                      color: yellowColor,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      recipe['rating'] as String,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    const Icon(
+                                      Icons.access_time,
+                                      size: 16,
+                                      color: primaryColor,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      recipe['time'] as String,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: backgroundColor,
+                                        borderRadius:
+                                        BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        recipe['category'] as String,
                                         style: const TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
                                           color: brownColor,
+                                          fontSize: 10,
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.star,
-                                            size: 17,
-                                            color: yellowColor,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            recipe['rating'] as String,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 16),
-                                          const Icon(
-                                            Icons.access_time,
-                                            size: 16,
-                                            color: primaryColor,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            recipe['time'] as String,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Container(
-                                            padding:
-                                                const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 5,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: backgroundColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Text(
-                                              recipe['category'] as String,
-                                              style: const TextStyle(
-                                                color: brownColor,
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       ),
+                    );
+                  },
+                ),
               ),
             ],
           ),
