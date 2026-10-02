@@ -4,7 +4,8 @@ import 'home_page.dart';
 import '../chat_page.dart';
 import '../favorite_page.dart';
 import '../profile_page.dart';
-import 'recipe_flow/recipe_flow_page.dart';
+
+import '../recipe/recipe_builder_page.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -33,7 +34,7 @@ class _MainNavigationState extends State<MainNavigation> {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => const RecipeFlowPage(),
+      builder: (context) => const RecipeBuilderPage(),
     ),
   );
 }

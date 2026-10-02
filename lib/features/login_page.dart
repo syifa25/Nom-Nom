@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   InputDecoration _fieldDecoration(String hint) {
-    final borderColor = AppColors.textSecondary.withOpacity(0.2);
+    final borderColor = AppColors.textSecondary.withValues(alpha: 0.2);
     return InputDecoration(
       hintText: hint,
       contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
