@@ -59,6 +59,9 @@ flutter:
 
   assets:
   - assets/logo_nomnom.png
+  - assets/loading_nomnom.png
+  - assets/Menu/
+  - assets/ingredients/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
