@@ -70,6 +70,35 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+  InputDecoration _fieldDecoration(String hint) {
+    final borderColor = AppColors.textSecondary.withValues(alpha: 0.2);
+    return InputDecoration(
+      hintText: hint,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: borderColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: borderColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: AppColors.coral, width: 1.5),
+      ),
+    );
+  }
+
+  Widget _label(String text) => Align(
+    alignment: Alignment.centerLeft,
+    child: Text(
+      text,
+      style: const TextStyle(
+          fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     const backgroundColor = Color(0xFFFFF4E5);

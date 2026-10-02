@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'home_page.dart';
-import '../chat_page.dart'; // Adjust path if needed
-import '../favorite_page.dart'; // Adjust path if needed
-import '../profile_page.dart'; // Adjust path if needed
-import 'recipe_flow/recipe_flow_page.dart';
+import '../chat_page.dart';
+import '../favorite_page.dart';
+import '../profile_page.dart';
+
+import '../recipe/recipe_builder_page.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -49,14 +50,13 @@ class _MainNavigationState extends State<MainNavigation> {
   static const Color _navColor = Color(0xFFFFE7C2);
 
   void _onRecipeTap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const RecipeFlowPage(),
-      ),
-    );
-  }
-
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const RecipeBuilderPage(),
+    ),
+  );
+}
   Widget _navItem({
     required IconData icon,
     required int index,
