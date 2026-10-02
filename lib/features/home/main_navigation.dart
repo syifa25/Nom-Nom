@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'home_page.dart';
-import '../chat_page.dart';
-import '../favorite_page.dart';
-import '../profile_page.dart';
+import '../chat_page.dart'; // Adjust path if needed
+import '../favorite_page.dart'; // Adjust path if needed
+import '../profile_page.dart'; // Adjust path if needed
 import 'recipe_flow/recipe_flow_page.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -17,12 +17,31 @@ class _MainNavigationState extends State<MainNavigation> {
   // 0 = Beranda, 1 = Favorit, 2 = Chat AI, 3 = Profil
   int _index = 0;
 
-  final List<Widget> _pages = [
-    HomePage(),
-    const FavoritPage(),
-    const ChatPage(),
-    const ProfilePage(),
-  ];
+  // List for hold favorite recipes
+  final List<Map<String, dynamic>> _favoriteRecipes = [];
+
+  void _toggleFavorite(Map<String, dynamic> recipe) {
+    setState(() {
+      final exists = _favoriteRecipes.any((item) => item['name'] == recipe['name']);
+      if (exists) {
+        _favoriteRecipes.removeWhere((item) => item['name'] == recipe['name']);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${recipe['name']} comot na favorit'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      } else {
+        _favoriteRecipes.add(recipe);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${recipe['name']} add na favorit!'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      }
+    });
+  }
 
   static const Color _orange = Color(0xFFD36327);
   static const Color _brown = Color(0xFF8B3E20);
@@ -30,13 +49,14 @@ class _MainNavigationState extends State<MainNavigation> {
   static const Color _navColor = Color(0xFFFFE7C2);
 
   void _onRecipeTap() {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const RecipeFlowPage(),
-    ),
-  );
-}
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const RecipeFlowPage(),
+      ),
+    );
+  }
+
   Widget _navItem({
     required IconData icon,
     required int index,
@@ -61,12 +81,25 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> pages = [
+      HomePage(
+        favoriteRecipes: _favoriteRecipes,
+        onToggleFavorite: _toggleFavorite,
+      ),
+      FavoritPage(
+        favoriteRecipes: _favoriteRecipes,
+        onRemoveFavorite: _toggleFavorite,
+      ),
+      const ChatPage(),
+      const ProfilePage(),
+    ];
+
     return Scaffold(
       backgroundColor: _cream,
       body: SafeArea(
         child: IndexedStack(
           index: _index,
-          children: _pages,
+          children: pages,
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -77,7 +110,7 @@ class _MainNavigationState extends State<MainNavigation> {
             clipBehavior: Clip.none,
             alignment: Alignment.topCenter,
             children: [
-              // Navbar berbentuk kapsul
+              // Navbar
               Positioned(
                 left: 16,
                 right: 16,
@@ -111,10 +144,7 @@ class _MainNavigationState extends State<MainNavigation> {
                         index: 1,
                         tooltip: 'Favorit',
                       ),
-
-                      // Ruang kosong untuk tombol tengah
                       const SizedBox(width: 64),
-
                       _navItem(
                         icon: _index == 2
                             ? Icons.chat_bubble
@@ -134,7 +164,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 ),
               ),
 
-              // Tombol utama rekomendasi masakan
+              // Button center
               Positioned(
                 top: 0,
                 child: Material(

@@ -1,30 +1,51 @@
-import 'package:flutter/foundation.dart';
-
 class AuthService {
-  AuthService._internal();
-  static final AuthService instance = AuthService._internal();
+  AuthService._privateConstructor();
+  static final AuthService instance = AuthService._privateConstructor();
 
-  final ValueNotifier<bool> isLoggedIn = ValueNotifier<bool>(false);
-  String? currentUserEmail;
   String? currentUserName;
+  String? currentUserEmail; // Tambahkan variabel email ini
 
-  void login(String email, String password, {String? name}) {
-    currentUserEmail = email;
-    // Jika nama tidak diisi, ambil nama depan dari email (contoh: nina@gmail.com -> Nina)
-    if (name != null && name.trim().isNotEmpty) {
-      currentUserName = name.trim();
-    } else {
-      final prefix = email.split('@').first;
-      currentUserName = prefix.isNotEmpty
-          ? prefix[0].toUpperCase() + prefix.substring(1)
-          : 'User';
+  final List<Map<String, String>> _users = [
+    {
+      'name': 'User',
+      'email': 'user@gmail.com',
+      'password': 'Password123',
+    },
+  ];
+
+  void login(String email, String password) {
+    for (var user in _users) {
+      if (user['email'] == email && user['password'] == password) {
+        currentUserName = user['name'];
+        currentUserEmail = user['email']; // Simpan email saat login
+        return;
+      }
     }
-    isLoggedIn.value = true;
+    currentUserName = null;
+    currentUserEmail = null;
+  }
+
+  bool register({
+    required String name,
+    required String email,
+    required String password,
+  }) {
+    bool isExist = _users.any((user) => user['email'] == email);
+    if (isExist) {
+      return false;
+    }
+
+    _users.add({
+      'name': name,
+      'email': email,
+      'password': password,
+    });
+
+    return true;
   }
 
   void logout() {
-    currentUserEmail = null;
     currentUserName = null;
-    isLoggedIn.value = false;
+    currentUserEmail = null;
   }
 }
