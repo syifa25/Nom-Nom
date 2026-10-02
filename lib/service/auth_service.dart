@@ -41,6 +41,9 @@ class AuthService {
       'password': password,
     });
 
+    currentUserName = name;
+    currentUserEmail = email;
+
     return true;
   }
 

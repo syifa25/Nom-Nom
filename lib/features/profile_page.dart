@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../service/auth_service.dart';
-import '../theme/app_colors.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:nom_nom/service/auth_service.dart';
+
 import 'login_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -11,156 +13,257 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  @override
-  Widget build(BuildContext context) {
-    final userName = AuthService.instance.currentUserName ?? 'Pengguna NomNom';
-    final userEmail = AuthService.instance.currentUserEmail ?? 'email@domain.com';
-    final initialLetter = userName.isNotEmpty ? userName[0].toUpperCase() : 'U';
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
 
-    return Scaffold(
-      backgroundColor: AppColors.bgPage,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-          child: Column(
+  // Fungsi untuk mengambil gambar dari Galeri / Kamera
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        maxWidth: 600,
+        maxHeight: 600,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memilih gambar: $e')),
+        );
+      }
+    }
+  }
+
+  // Bottom Sheet untuk memilih antara Galeri atau Kamera
+  void _showImagePickerOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
             children: [
-              const SizedBox(height: 10),
-              // Circle Avatar Sesuai Inisial Nama User
-              CircleAvatar(
-                radius: 45,
-                backgroundColor: const Color(0xFFD36327),
-                child: Text(
-                  initialLetter,
-                  style: const TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Nama & Email Dinamis
-              Text(
-                userName,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                userEmail,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Card Statistik (18 Favorit | 42 Resep Dicoba | 7 Hari Berturut)
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildStatItem('18', 'Favorit'),
-                    _buildStatItem('42', 'Resep Dicoba'),
-                    _buildStatItem('7', 'Hari Berturut'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // List Menu Pilihan (Preferensi Diet & Resep Pribadi Sudah Dihapus)
-              _buildMenuItem(
-                Icons.calendar_month_rounded,
-                'Rencana Masak (Meal Plan)',
-                const Color(0xFF6C8EBF),
+              ListTile(
+                leading: const Icon(Icons.photo_library, color: Color(0xFFE66A3C)),
+                title: const Text('Pilih dari Galeri'),
                 onTap: () {
-                  // Aksi untuk membuka Rencana Masak
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
                 },
               ),
-              _buildMenuItem(
-                Icons.settings_outlined,
-                'Pengaturan Akun',
-                const Color(0xFF9E9E9E),
-              ),
-              _buildMenuItem(
-                Icons.help_outline_rounded,
-                'Bantuan',
-                const Color(0xFFE53935),
-              ),
-              _buildMenuItem(
-                Icons.door_sliding_outlined,
-                'Keluar',
-                const Color(0xFFD36327),
-                isLogout: true,
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: Color(0xFFE66A3C)),
+                title: const Text('Ambil dari Kamera'),
                 onTap: () {
-                  AuthService.instance.logout();
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const LoginPage()),
-                        (route) => false,
-                  );
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
                 },
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildStatItem(String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFFD36327),
+  void _showEditProfileDialog() {
+    final nameController = TextEditingController(
+      text: AuthService.instance.currentUserName ?? 'User',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: Colors.grey,
+          title: const Text(
+            'Edit Profil',
+            style: TextStyle(
+              color: Color(0xFF8B3E20),
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ],
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nama Lengkap',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE66A3C),
+              ),
+              onPressed: () {
+                setState(() {
+                  AuthService.instance.currentUserName = nameController.text;
+                });
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'Simpan',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildMenuItem(
-      IconData icon,
-      String title,
-      Color iconColor, {
-        bool isLogout = false,
-        VoidCallback? onTap,
-      }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ListTile(
-        onTap: onTap,
-        leading: Icon(icon, color: iconColor, size: 22),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isLogout ? const Color(0xFFD36327) : Colors.black87,
+  @override
+  Widget build(BuildContext context) {
+    const backgroundColor = Color(0xFFFFF4E5);
+    const primaryColor = Color(0xFFE66A3C);
+    const brownColor = Color(0xFF8B3E20);
+
+    // Dapatkan nama dan email dinamis dari AuthService
+    final userName = AuthService.instance.currentUserName ?? 'User';
+    final userEmail = AuthService.instance.currentUserEmail ?? 'email@gmail.com';
+
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+
+              // --- FOTO PROFIL ---
+              Center(
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: primaryColor,
+                      backgroundImage:
+                      _imageFile != null ? FileImage(_imageFile!) : null,
+                      child: _imageFile == null
+                          ? Text(
+                        userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                        style: const TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      )
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _showImagePickerOptions,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: brownColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // --- NAMA & EMAIL ---
+              Text(
+                userName,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: brownColor,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                userEmail, // Menggunakan variabel userEmail dinamis
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // --- MENU PROFIL ---
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE8D8C8)),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.person_outline, color: primaryColor),
+                      title: const Text(
+                        'Edit Profil',
+                        style: TextStyle(
+                          color: brownColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                      onTap: _showEditProfileDialog,
+                    ),
+                    const Divider(height: 1, color: Color(0xFFE8D8C8)),
+                    ListTile(
+                      leading: const Icon(Icons.logout, color: Colors.redAccent),
+                      title: const Text(
+                        'Keluar',
+                        style: TextStyle(
+                          color: Colors.redAccent,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onTap: () {
+                        // Reset session di AuthService saat logout
+                        AuthService.instance.logout();
+
+                        // Pindah ke halaman Login dan bersihkan tumpukan route
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                              (route) => false,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

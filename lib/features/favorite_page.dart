@@ -45,7 +45,7 @@ class FavoritPage extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: primaryColor.withOpacity(0.1),
+                            color: primaryColor.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -81,7 +81,8 @@ class FavoritPage extends StatelessWidget {
                 Expanded(
                   child: GridView.builder(
                     itemCount: favoriteRecipes.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
@@ -100,25 +101,35 @@ class FavoritPage extends StatelessWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  height: 95,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: yellowColor.withOpacity(0.35),
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(15),
-                                    ),
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(15),
                                   ),
-                                  child: Icon(
-                                    item['icon'] as IconData? ?? Icons.restaurant,
-                                    color: brownColor,
-                                    size: 40,
+                                  child: Image.asset(
+                                    item['image'] as String? ?? '',
+                                    height: 95,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) {
+                                      return Container(
+                                        height: 95,
+                                        width: double.infinity,
+                                        color: yellowColor.withValues(alpha: 0.35),
+                                        child: const Icon(
+                                          Icons.restaurant,
+                                          color: brownColor,
+                                          size: 40,
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(10),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         item['name'] ?? '',
