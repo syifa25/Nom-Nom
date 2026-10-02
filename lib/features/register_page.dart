@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
 import '../service/auth_service.dart';
-import 'home/main_navigation.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -11,28 +9,57 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  String? _errorText;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   void _handleRegister() {
-    final name = _nameController.text.trim();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+    String name = _nameController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
 
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
-      setState(() => _errorText = 'Semua kolom wajib diisi');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Semua kolom harus diisi!')),
+      );
       return;
     }
 
-    setState(() => _errorText = null);
-    AuthService.instance.login(email, password, name: name);
+    bool isMinLength = password.length >= 5;
+    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
 
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainNavigation()),
-          (route) => false,
+    if (!isMinLength || !hasUppercase || !hasLowercase) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Password minimal 5 karakter dan harus ada kombinasi huruf besar & kecil!',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    bool success = AuthService.instance.register(
+      name: name,
+      email: email,
+      password: password,
     );
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pendaftaran berhasil! Silakan login.')),
+      );
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email sudah terdaftar! Gunakan email lain.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -74,93 +101,123 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    const backgroundColor = Color(0xFFFFF4E5);
+    const primaryColor = Color(0xFFE66A3C);
+    const brownColor = Color(0xFF8B3E20);
+
     return Scaffold(
-      backgroundColor: AppColors.bgPage,
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        backgroundColor: backgroundColor,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: brownColor),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Logo Aplikasi dari Assets
-              Container(
-                width: 72,
-                height: 72,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.coral,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Image.asset(
-                  'assets/logo_nomnom.png',
-                  fit: BoxFit.contain,
-                ),
+              const Icon(
+                Icons.soup_kitchen,
+                size: 70,
+                color: primaryColor,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               const Text(
                 'Buat Akun NomNom',
-                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Yuk, Daftar dan temukan makanan yang kamu suka!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.5),
-              ),
-              const SizedBox(height: 24),
-              _label('Nama Lengkap'),
-              const SizedBox(height: 6),
-              TextField(controller: _nameController, decoration: _fieldDecoration('Nama kamu')),
-              const SizedBox(height: 14),
-              _label('Email'),
-              const SizedBox(height: 6),
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: _fieldDecoration('Masukkan Email Anda'),
-              ),
-              const SizedBox(height: 14),
-              _label('Password'),
-              const SizedBox(height: 6),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: _fieldDecoration('Buat password'),
-              ),
-              if (_errorText != null) ...[
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_errorText!,
-                      style: const TextStyle(color: Colors.red, fontSize: 11.5)),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: brownColor,
                 ),
-              ],
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _handleRegister,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.coral,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Daftar untuk menyimpan dan mencari resep favorit',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: Colors.brown),
+              ),
+              const SizedBox(height: 28),
+
+              // Field Nama
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nama Lengkap',
+                    prefixIcon: Icon(Icons.person, color: primaryColor),
+                    border: InputBorder.none,
+                    contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
-                  child: const Text('Daftar', style: TextStyle(fontWeight: FontWeight.w700)),
                 ),
               ),
               const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: RichText(
-                  text: TextSpan(
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                    children: const [
-                      TextSpan(text: 'Sudah punya akun? '),
-                      TextSpan(
-                        text: 'Masuk',
-                        style: TextStyle(color: AppColors.coral, fontWeight: FontWeight.w700),
-                      ),
-                    ],
+
+              // Field Email
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email, color: primaryColor),
+                    border: InputBorder.none,
+                    contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Field Password
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'Min. 5 karakter (huruf besar & kecil)',
+                    hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
+                    prefixIcon: Icon(Icons.lock, color: primaryColor),
+                    border: InputBorder.none,
+                    contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // Tombol Daftar
+              ElevatedButton(
+                onPressed: _handleRegister,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text(
+                  'Daftar',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),

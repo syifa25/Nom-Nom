@@ -1,101 +1,180 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
 
 class FavoritPage extends StatelessWidget {
-  const FavoritPage({super.key});
+  final List<Map<String, dynamic>> favoriteRecipes;
+  final Function(Map<String, dynamic>)? onRemoveFavorite;
 
-  static const _favorites = [
-    {'name': 'Nasi Goreng Kampung', 'meta': '20 menit · mudah'},
-    {'name': 'Soto Ayam', 'meta': '45 menit · sedang'},
-    {'name': 'Perkedel Kentang', 'meta': '25 menit · mudah'},
-    {'name': 'Ayam Bakar Rujak', 'meta': '30 menit · sedang'},
-  ];
+  const FavoritPage({
+    super.key,
+    this.favoriteRecipes = const [],
+    this.onRemoveFavorite,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Resep Favorit',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _favorites.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 0.95,
-            ),
-            itemBuilder: (context, index) {
-              final item = _favorites[index];
-              return Container(
-                decoration: BoxDecoration(
-                  color: AppColors.cardBg,
-                  borderRadius: BorderRadius.circular(14),
-                  border:
-                  Border.all(color: AppColors.textSecondary.withValues(alpha: 0.12)),
+    const backgroundColor = Color(0xFFFFF4E5);
+    const primaryColor = Color(0xFFE66A3C);
+    const brownColor = Color(0xFF8B3E20);
+    const yellowColor = Color(0xFFFFC857);
+
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Resep Favorit',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: brownColor,
                 ),
-                child: Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              const SizedBox(height: 16),
+
+              // Jika Belum Ada Favorit (Empty State)
+              if (favoriteRecipes.isEmpty)
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          height: 90,
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            color: AppColors.cream,
-                            borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(14)),
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: primaryColor.withOpacity(0.1),
+                            shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.restaurant,
-                              color: AppColors.amber, size: 28),
+                          child: const Icon(
+                            Icons.favorite_border,
+                            size: 60,
+                            color: primaryColor,
+                          ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(item['name']!,
-                                  style: const TextStyle(
-                                      fontSize: 12, fontWeight: FontWeight.w700)),
-                              const SizedBox(height: 4),
-                              Text(
-                                item['meta']!,
-                                style: const TextStyle(
-                                    fontSize: 10, color: AppColors.textSecondary),
-                              ),
-                            ],
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Belum Ada Resep Favorit',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: brownColor,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Tandai resep favoritmu dengan menekan ikon hati di halaman Beranda.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.brown,
                           ),
                         ),
                       ],
                     ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.favorite,
-                            color: AppColors.coral, size: 14),
-                      ),
+                  ),
+                )
+              else
+              // Jika Ada Resep Favorit
+                Expanded(
+                  child: GridView.builder(
+                    itemCount: favoriteRecipes.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.85,
                     ),
-                  ],
+                    itemBuilder: (context, index) {
+                      final item = favoriteRecipes[index];
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFFE8D8C8)),
+                        ),
+                        child: Stack(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 95,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: yellowColor.withOpacity(0.35),
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(15),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    item['icon'] as IconData? ?? Icons.restaurant,
+                                    color: brownColor,
+                                    size: 40,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item['name'] ?? '',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: brownColor,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${item['time']} · ${item['rating']} ★',
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.brown,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (onRemoveFavorite != null) {
+                                    onRemoveFavorite!(item);
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.favorite,
+                                    color: primaryColor,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              );
-            },
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
