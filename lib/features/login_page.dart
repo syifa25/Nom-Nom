@@ -3,6 +3,7 @@ import '../theme/app_colors.dart';
 import '../service/auth_service.dart';
 import 'home/main_navigation.dart';
 import 'register_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,24 +16,56 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   String? _errorText;
+  bool _isLoading = false;
 
-  void _handleLogin() {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+  
+Future<void> _handleLogin() async {
+  final email = _emailController.text.trim();
+  final password = _passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      setState(() => _errorText = 'Email dan password wajib diisi');
-      return;
-    }
+  if (email.isEmpty || password.isEmpty) {
+    setState(() => _errorText = 'Email dan password wajib diisi');
+    return;
+  }
 
-    setState(() => _errorText = null);
-    AuthService.instance.login(email, password);
+  setState(() {
+    _errorText = null;
+    _isLoading = true;
+  });
+
+  try {
+    await AuthService.instance.login(
+      email: email,
+      password: password,
+    );
+
+    if (!mounted) return;
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainNavigation()),
-          (route) => false,
+      MaterialPageRoute(
+        builder: (_) => const MainNavigation(),
+      ),
+      (route) => false,
     );
+  } on AuthException catch (e) {
+    if (!mounted) return;
+
+    setState(() {
+      _errorText = e.message;
+    });
+  } catch (e) {
+    if (!mounted) return;
+
+    setState(() {
+      _errorText = 'Terjadi kesalahan. Silakan coba lagi.';
+    });
+  } finally {
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
   }
+}
+
 
   @override
   void dispose() {
@@ -143,16 +176,28 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _handleLogin,
+                  onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.coral,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Masuk',
-                      style: TextStyle(fontWeight: FontWeight.w700)),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          'Masuk',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
                 ),
               ),
               const SizedBox(height: 16),
