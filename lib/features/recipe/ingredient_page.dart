@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
 import 'cooking_tool_page.dart';
@@ -20,56 +20,21 @@ class _IngredientPageState extends State<IngredientPage> {
   final Set<String> selectedIngredients = {};
 
   List<Map<String, String>> ingredients = [
-    {
-      'name': 'Ayam',
-      'image': 'assets/ingredients/ayam.png',
-    },
-    {
-      'name': 'Telur',
-      'image': 'assets/ingredients/telur.png',
-    },
-    {
-      'name': 'Daging Sapi',
-      'image': 'assets/ingredients/daging.png',
-    },
-    {
-      'name': 'Ikan',
-      'image': 'assets/ingredients/ikan.png',
-    },
-    {
-      'name': 'Udang',
-      'image': 'assets/ingredients/udang.png',
-    },
-    {
-      'name': 'Tahu',
-      'image': 'assets/ingredients/tahu.png',
-    },
-    {
-      'name': 'Tempe',
-      'image': 'assets/ingredients/tempe.png',
-    },
-    {
-      'name': 'Wortel',
-      'image': 'assets/ingredients/wortel.png',
-    },
-    {
-      'name': 'Kentang',
-      'image': 'assets/ingredients/kentang.png',
-    },
-    {
-      'name': 'Tomat',
-      'image': 'assets/ingredients/tomat.png',
-    },
-    {
-      'name': 'Bawang',
-      'image': 'assets/ingredients/bawang.png',
-    },
-    {
-      'name': 'Cabai',
-      'image': 'assets/ingredients/cabai.png',
-    },
+    {'name': 'Ayam', 'image': 'assets/ingredients/ayam.png'},
+    {'name': 'Telur', 'image': 'assets/ingredients/telur.png'},
+    {'name': 'Daging Sapi', 'image': 'assets/ingredients/daging.png'},
+    {'name': 'Ikan', 'image': 'assets/ingredients/ikan.png'},
+    {'name': 'Udang', 'image': 'assets/ingredients/udang.png'},
+    {'name': 'Tahu', 'image': 'assets/ingredients/tahu.png'},
+    {'name': 'Tempe', 'image': 'assets/ingredients/tempe.png'},
+    {'name': 'Wortel', 'image': 'assets/ingredients/wortel.png'},
+    {'name': 'Kentang', 'image': 'assets/ingredients/kentang.png'},
+    {'name': 'Tomat', 'image': 'assets/ingredients/tomat.png'},
+    {'name': 'Bawang', 'image': 'assets/ingredients/bawang.png'},
+    {'name': 'Cabai', 'image': 'assets/ingredients/cabai.png'},
   ];
 
+  // Memilih atau membatalkan pilihan bahan
   void toggleIngredient(String name) {
     setState(() {
       if (selectedIngredients.contains(name)) {
@@ -79,9 +44,11 @@ class _IngredientPageState extends State<IngredientPage> {
       }
     });
   }
-  Widget _buildAddCard(){
+
+  // Card untuk menambahkan bahan baru
+  Widget _buildAddCard() {
     return GestureDetector(
-      onTap: () => _showAddIngredientModal(context),
+      onTap: _showAddIngredientModal,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -89,13 +56,12 @@ class _IngredientPageState extends State<IngredientPage> {
           border: Border.all(
             color: AppColors.coral.withValues(alpha: 0.4),
             width: 2,
-            style: BorderStyle.solid,
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
-              offset: const Offset(0,3),
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -133,32 +99,143 @@ class _IngredientPageState extends State<IngredientPage> {
     );
   }
 
-  void _showAddIngredientModal(BuildContext context){
-    final TextEditingController nameController = TextEditingController();
-    final TextEditingController imageController = TextEditingController();
+  // Bottom sheet tambah bahan
+  void _showAddIngredientModal() {
+    final nameController = TextEditingController();
+    final imageController = TextEditingController();
 
     showModalBottomSheet(
-      context: context, 
+      context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24))
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(24),
+        ),
       ),
-      builder: (context){
+      builder: (sheetContext) {
         return Padding(
           padding: EdgeInsets.fromLTRB(
             24,
-            24, 
-            24, 
-            MediaQuery.of(context).viewInsets.bottom + 24,
+            24,
+            24,
+            MediaQuery.of(sheetContext).viewInsets.bottom + 24,
           ),
-        ),
-        child:
-      }
-      
-      ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Tambah Bahan Makanan',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nama Bahan',
+                  hintText: 'Contoh: Brokoli',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              TextField(
+                controller: imageController,
+                decoration: const InputDecoration(
+                  labelText: 'Path Gambar (Opsional)',
+                  hintText: 'assets/ingredients/brokoli.png',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.coral,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    final name = nameController.text.trim();
+                    final image = imageController.text.trim();
+
+                    // Validasi nama
+                    if (name.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Nama bahan wajib diisi'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    // Validasi bahan duplikat
+                    final isDuplicate = ingredients.any(
+                      (item) =>
+                          (item['name'] ?? '').toLowerCase() ==
+                          name.toLowerCase(),
+                    );
+
+                    if (isDuplicate) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Bahan sudah tersedia'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    // Menambahkan bahan ke daftar
+                    setState(() {
+                      ingredients.add({
+                        'name': name,
+                        'image': image,
+                      });
+                    });
+
+                    Navigator.pop(sheetContext);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('$name berhasil ditambahkan'),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Simpan Bahan',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ).whenComplete(() {
+      nameController.dispose();
+      imageController.dispose();
+    });
   }
 
+  // Navigasi ke halaman alat masak
   void nextPage() {
     if (selectedIngredients.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -188,6 +265,7 @@ class _IngredientPageState extends State<IngredientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgPage,
+
       appBar: AppBar(
         backgroundColor: AppColors.bgPage,
         elevation: 0,
@@ -210,9 +288,11 @@ class _IngredientPageState extends State<IngredientPage> {
           ),
         ),
       ),
+
       body: SafeArea(
         child: Column(
           children: [
+            // Judul halaman
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 24,
@@ -231,7 +311,9 @@ class _IngredientPageState extends State<IngredientPage> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
+
                   const SizedBox(height: 6),
+
                   Text(
                     'Pilih bahan yang tersedia di dapurmu.',
                     style: TextStyle(
@@ -244,6 +326,8 @@ class _IngredientPageState extends State<IngredientPage> {
                 ],
               ),
             ),
+
+            // Grid bahan makanan
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.fromLTRB(
@@ -252,7 +336,9 @@ class _IngredientPageState extends State<IngredientPage> {
                   20,
                   20,
                 ),
+
                 itemCount: ingredients.length + 1,
+
                 gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
@@ -260,21 +346,24 @@ class _IngredientPageState extends State<IngredientPage> {
                   mainAxisSpacing: 12,
                   childAspectRatio: 0.82,
                 ),
-                itemBuilder: (context, index) {
-                  final ingredient = ingredients[index];
 
-                  return _buildIngredientCard(
-                    name: ingredient['name']!,
-                    image: ingredient['image']!,
-                  );
-                  if (index == ingredient.length){
+                itemBuilder: (context, index) {
+                  // Card tambah berada di akhir grid
+                  if (index == ingredients.length) {
                     return _buildAddCard();
                   }
 
-                  return _buildIngredientCard(name: ingredient[index]['name'], image: ingredient[index]['image']);
+                  final ingredient = ingredients[index];
+
+                  return _buildIngredientCard(
+                    name: ingredient['name'] ?? '',
+                    image: ingredient['image'] ?? '',
+                  );
                 },
               ),
             ),
+
+            // Tombol berikutnya
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 20,
@@ -311,6 +400,7 @@ class _IngredientPageState extends State<IngredientPage> {
     );
   }
 
+  // Card bahan makanan
   Widget _buildIngredientCard({
     required String name,
     required String image,
@@ -321,6 +411,7 @@ class _IngredientPageState extends State<IngredientPage> {
       onTap: () => toggleIngredient(name),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
+
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
@@ -338,6 +429,7 @@ class _IngredientPageState extends State<IngredientPage> {
             ),
           ],
         ),
+
         child: Stack(
           children: [
             Center(
@@ -347,25 +439,34 @@ class _IngredientPageState extends State<IngredientPage> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
-                      child: Image.asset(
-                        image,
-                        fit: BoxFit.contain,
-                        errorBuilder: (
-                          context,
-                          error,
-                          stackTrace,
-                        ) {
-                          return Icon(
-                            Icons.fastfood_rounded,
-                            size: 48,
-                            color: AppColors.coral.withValues(
-                              alpha: 0.7,
+                      child: image.isEmpty
+                          ? Icon(
+                              Icons.fastfood_rounded,
+                              size: 48,
+                              color: AppColors.coral.withValues(
+                                alpha: 0.7,
+                              ),
+                            )
+                          : Image.asset(
+                              image,
+                              fit: BoxFit.contain,
+                              errorBuilder: (
+                                context,
+                                error,
+                                stackTrace,
+                              ) {
+                                return Icon(
+                                  Icons.fastfood_rounded,
+                                  size: 48,
+                                  color: AppColors.coral.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ),
+
                   Padding(
                     padding: const EdgeInsets.only(
                       left: 4,
@@ -387,6 +488,8 @@ class _IngredientPageState extends State<IngredientPage> {
                 ],
               ),
             ),
+
+            // Tanda bahan dipilih
             if (isSelected)
               Positioned(
                 top: 8,

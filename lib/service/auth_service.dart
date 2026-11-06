@@ -1,7 +1,26 @@
-class AuthService {
-  AuthService._privateConstructor();
-  static final AuthService instance = AuthService._privateConstructor();
+import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:async';
 
+class AuthService {
+  AuthService._internal() {
+    _updateUser();
+
+    // Memantau perubahan status autentikasi
+    _authSubscription = client.auth.onAuthStateChange.listen((data) {
+      _updateUser();
+    });
+  }
+
+  static final AuthService instance = AuthService._internal();
+
+  final SupabaseClient client = Supabase.instance.client;
+
+  late final StreamSubscription<AuthState> _authSubscription;
+
+  final ValueNotifier<bool> isLoggedIn = ValueNotifier<bool>(false);
+
+  String? currentUserEmail;
   String? currentUserName;
   String? currentUserEmail; // Tambahkan variabel email ini
 
@@ -13,39 +32,61 @@ class AuthService {
     },
   ];
 
-  void login(String email, String password) {
-    for (var user in _users) {
-      if (user['email'] == email && user['password'] == password) {
-        currentUserName = user['name'];
-        currentUserEmail = user['email']; // Simpan email saat login
-        return;
-      }
+  User? get currentUser => client.auth.currentUser;
+
+  void _updateUser() {
+    final user = client.auth.currentUser;
+
+    isLoggedIn.value = user != null;
+    currentUserEmail = user?.email;
+
+    final metadataName = user?.userMetadata?['full_name'] as String?;
+
+    if (metadataName != null && metadataName.isNotEmpty) {
+      currentUserName = metadataName;
+    } else {
+      final prefix = user?.email?.split('@').first ?? '';
+      currentUserName = prefix.isNotEmpty
+          ? prefix[0].toUpperCase() + prefix.substring(1)
+          : null;
     }
-    currentUserName = null;
-    currentUserEmail = null;
   }
 
-  bool register({
+  // Registrasi pengguna
+  Future<AuthResponse> register({
     required String name,
     required String email,
     required String password,
-  }) {
-    bool isExist = _users.any((user) => user['email'] == email);
-    if (isExist) {
-      return false;
-    }
+  }) async {
+    final response = await client.auth.signUp(
+      email: email,
+      password: password,
+      data: {
+        'full_name': name,
+      },
+    );
 
-    _users.add({
-      'name': name,
-      'email': email,
-      'password': password,
-    });
-
-    return true;
+    _updateUser();
+    return response;
   }
 
-  void logout() {
-    currentUserName = null;
-    currentUserEmail = null;
+  // Login pengguna
+  Future<AuthResponse> login({
+    required String email,
+    required String password,
+  }) async {
+    final response = await client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+
+    _updateUser();
+    return response;
+  }
+
+  // Logout pengguna
+  Future<void> logout() async {
+    await client.auth.signOut();
+    _updateUser();
   }
 }

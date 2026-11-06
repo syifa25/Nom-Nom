@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../service/auth_service.dart';
+import 'home/main_navigation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,58 +11,90 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String? _errorText;
+  bool _isLoading = false;
 
-  void _handleRegister() {
-    String name = _nameController.text.trim();
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
+  
+Future<void> _handleRegister() async {
+  final name = _nameController.text.trim();
+  final email = _emailController.text.trim();
+  final password = _passwordController.text;
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Semua kolom harus diisi!')),
-      );
-      return;
-    }
+  if (name.isEmpty || email.isEmpty || password.isEmpty) {
+    setState(() => _errorText = 'Semua kolom wajib diisi');
+    return;
+  }
 
-    bool isMinLength = password.length >= 5;
-    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
-    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+  if (!email.contains('@') || !email.contains('.')) {
+    setState(() => _errorText = 'Format email tidak valid');
+    return;
+  }
 
-    if (!isMinLength || !hasUppercase || !hasLowercase) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Password minimal 5 karakter dan harus ada kombinasi huruf besar & kecil!',
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+  if (password.length < 6) {
+    setState(() => _errorText = 'Password minimal 6 karakter');
+    return;
+  }
 
-    bool success = AuthService.instance.register(
+  setState(() {
+    _errorText = null;
+    _isLoading = true;
+  });
+
+  try {
+    final response = await AuthService.instance.register(
       name: name,
       email: email,
       password: password,
     );
 
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pendaftaran berhasil! Silakan login.')),
-      );
-      Navigator.pop(context);
-    } else {
+    if (!mounted) return;
+
+    // Jika konfirmasi email diaktifkan,
+    // pengguna perlu verifikasi email terlebih dahulu.
+    if (response.session == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Email sudah terdaftar! Gunakan email lain.'),
-          backgroundColor: Colors.red,
+          content: Text(
+            'Registrasi berhasil! Silakan cek email untuk verifikasi akun.',
+          ),
+          duration: Duration(seconds: 5),
         ),
       );
+
+      Navigator.pop(context);
+      return;
+    }
+
+    // Jika konfirmasi email tidak diwajibkan,
+    // pengguna langsung masuk.
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => const MainNavigation(),
+      ),
+      (route) => false,
+    );
+  } on AuthException catch (e) {
+    if (!mounted) return;
+
+    setState(() {
+      _errorText = e.message;
+    });
+  } catch (e) {
+    if (!mounted) return;
+
+    setState(() {
+      _errorText = 'Registrasi gagal. Silakan coba lagi.';
+    });
+  } finally {
+    if (mounted) {
+      setState(() => _isLoading = false);
     }
   }
+}
+
 
   @override
   void dispose() {
@@ -166,16 +200,33 @@ class _RegisterPageState extends State<RegisterPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email, color: primaryColor),
-                    border: InputBorder.none,
-                    contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ],
+              const SizedBox(height: 18),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _handleRegister,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.coral,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          'Daftar',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
                 ),
               ),
               const SizedBox(height: 16),
