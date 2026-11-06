@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
 import '../service/auth_service.dart';
 import 'home/main_navigation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -136,64 +135,70 @@ Future<void> _handleRegister() async {
 
   @override
   Widget build(BuildContext context) {
+    const backgroundColor = Color(0xFFFFF4E5);
+    const primaryColor = Color(0xFFE66A3C);
+    const brownColor = Color(0xFF8B3E20);
+
     return Scaffold(
-      backgroundColor: AppColors.bgPage,
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        backgroundColor: backgroundColor,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: brownColor),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Logo Aplikasi dari Assets
-              Container(
-                width: 72,
-                height: 72,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.coral,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Image.asset(
-                  'assets/logo_nomnom.png',
-                  fit: BoxFit.contain,
-                ),
+              const Icon(
+                Icons.soup_kitchen,
+                size: 70,
+                color: primaryColor,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               const Text(
                 'Buat Akun NomNom',
-                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Yuk, Daftar dan temukan makanan yang kamu suka!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.5),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: brownColor,
+                ),
               ),
-              const SizedBox(height: 24),
-              _label('Nama Lengkap'),
               const SizedBox(height: 6),
-              TextField(controller: _nameController, decoration: _fieldDecoration('Nama kamu')),
-              const SizedBox(height: 14),
-              _label('Email'),
-              const SizedBox(height: 6),
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: _fieldDecoration('Masukkan Email Anda'),
+              const Text(
+                'Daftar untuk menyimpan dan mencari resep favorit',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: Colors.brown),
               ),
-              const SizedBox(height: 14),
-              _label('Password'),
-              const SizedBox(height: 6),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: _fieldDecoration('Buat password'),
+              const SizedBox(height: 28),
+
+              // Field Nama
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nama Lengkap',
+                    prefixIcon: Icon(Icons.person, color: primaryColor),
+                    border: InputBorder.none,
+                    contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
               ),
-              if (_errorText != null) ...[
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_errorText!,
-                      style: const TextStyle(color: Colors.red, fontSize: 11.5)),
+              const SizedBox(height: 16),
+
+              // Field Email
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ],
               const SizedBox(height: 18),
@@ -225,18 +230,45 @@ Future<void> _handleRegister() async {
                 ),
               ),
               const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: RichText(
-                  text: TextSpan(
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                    children: const [
-                      TextSpan(text: 'Sudah punya akun? '),
-                      TextSpan(
-                        text: 'Masuk',
-                        style: TextStyle(color: AppColors.coral, fontWeight: FontWeight.w700),
-                      ),
-                    ],
+
+              // Field Password
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'Min. 5 karakter (huruf besar & kecil)',
+                    hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
+                    prefixIcon: Icon(Icons.lock, color: primaryColor),
+                    border: InputBorder.none,
+                    contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // Tombol Daftar
+              ElevatedButton(
+                onPressed: _handleRegister,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text(
+                  'Daftar',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),

@@ -22,6 +22,15 @@ class AuthService {
 
   String? currentUserEmail;
   String? currentUserName;
+  String? currentUserEmail; // Tambahkan variabel email ini
+
+  final List<Map<String, String>> _users = [
+    {
+      'name': 'User',
+      'email': 'user@gmail.com',
+      'password': 'Password123',
+    },
+  ];
 
   User? get currentUser => client.auth.currentUser;
 
