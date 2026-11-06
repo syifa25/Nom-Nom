@@ -22,7 +22,7 @@ class AuthService {
 
   String? currentUserEmail;
   String? currentUserName;
-  String? currentUserEmail; // Tambahkan variabel email ini
+  //String? currentUserEmail; // Tambahkan variabel email ini
 
   final List<Map<String, String>> _users = [
     {
@@ -33,6 +33,8 @@ class AuthService {
   ];
 
   User? get currentUser => client.auth.currentUser;
+
+  get displayName => null;
 
   void _updateUser() {
     final user = client.auth.currentUser;

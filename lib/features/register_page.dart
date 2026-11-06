@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../service/auth_service.dart';
+import '../theme/app_colors.dart'; // <-- Import AppColors yang kurang
 import 'home/main_navigation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,84 +18,78 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _errorText;
   bool _isLoading = false;
 
-  
-Future<void> _handleRegister() async {
-  final name = _nameController.text.trim();
-  final email = _emailController.text.trim();
-  final password = _passwordController.text;
+  Future<void> _handleRegister() async {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
 
-  if (name.isEmpty || email.isEmpty || password.isEmpty) {
-    setState(() => _errorText = 'Semua kolom wajib diisi');
-    return;
-  }
-
-  if (!email.contains('@') || !email.contains('.')) {
-    setState(() => _errorText = 'Format email tidak valid');
-    return;
-  }
-
-  if (password.length < 6) {
-    setState(() => _errorText = 'Password minimal 6 karakter');
-    return;
-  }
-
-  setState(() {
-    _errorText = null;
-    _isLoading = true;
-  });
-
-  try {
-    final response = await AuthService.instance.register(
-      name: name,
-      email: email,
-      password: password,
-    );
-
-    if (!mounted) return;
-
-    // Jika konfirmasi email diaktifkan,
-    // pengguna perlu verifikasi email terlebih dahulu.
-    if (response.session == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Registrasi berhasil! Silakan cek email untuk verifikasi akun.',
-          ),
-          duration: Duration(seconds: 5),
-        ),
-      );
-
-      Navigator.pop(context);
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      setState(() => _errorText = 'Semua kolom wajib diisi');
       return;
     }
 
-    // Jika konfirmasi email tidak diwajibkan,
-    // pengguna langsung masuk.
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => const MainNavigation(),
-      ),
-      (route) => false,
-    );
-  } on AuthException catch (e) {
-    if (!mounted) return;
+    if (!email.contains('@') || !email.contains('.')) {
+      setState(() => _errorText = 'Format email tidak valid');
+      return;
+    }
+
+    if (password.length < 6) {
+      setState(() => _errorText = 'Password minimal 6 karakter');
+      return;
+    }
 
     setState(() {
-      _errorText = e.message;
+      _errorText = null;
+      _isLoading = true;
     });
-  } catch (e) {
-    if (!mounted) return;
 
-    setState(() {
-      _errorText = 'Registrasi gagal. Silakan coba lagi.';
-    });
-  } finally {
-    if (mounted) {
-      setState(() => _isLoading = false);
+    try {
+      final response = await AuthService.instance.register(
+        name: name,
+        email: email,
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      if (response.session == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Registrasi berhasil! Silakan cek email untuk verifikasi akun.',
+            ),
+            duration: Duration(seconds: 5),
+          ),
+        );
+
+        Navigator.pop(context);
+        return;
+      }
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => const MainNavigation(),
+        ),
+            (route) => false,
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _errorText = e.message;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _errorText = 'Registrasi gagal. Silakan coba lagi.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
-}
-
 
   @override
   void dispose() {
@@ -103,35 +98,6 @@ Future<void> _handleRegister() async {
     _passwordController.dispose();
     super.dispose();
   }
-
-  InputDecoration _fieldDecoration(String hint) {
-    final borderColor = AppColors.textSecondary.withValues(alpha: 0.2);
-    return InputDecoration(
-      hintText: hint,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: borderColor),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: borderColor),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: AppColors.coral, width: 1.5),
-      ),
-    );
-  }
-
-  Widget _label(String text) => Align(
-    alignment: Alignment.centerLeft,
-    child: Text(
-      text,
-      style: const TextStyle(
-          fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
-    ),
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +141,24 @@ Future<void> _handleRegister() async {
               ),
               const SizedBox(height: 28),
 
+              // Pesan Error jika ada
+              if (_errorText != null) ...[
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red.shade200),
+                  ),
+                  child: Text(
+                    _errorText!,
+                    style: const TextStyle(color: Colors.red, fontSize: 13),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
               // Field Nama
               Container(
                 decoration: BoxDecoration(
@@ -200,33 +184,16 @@ Future<void> _handleRegister() async {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
-              ],
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _handleRegister,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.coral,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                child: TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email, color: primaryColor),
+                    border: InputBorder.none,
+                    contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text(
-                          'Daftar',
-                          style: TextStyle(fontWeight: FontWeight.w700),
-                        ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -242,7 +209,7 @@ Future<void> _handleRegister() async {
                   obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'Password',
-                    hintText: 'Min. 5 karakter (huruf besar & kecil)',
+                    hintText: 'Min. 6 karakter',
                     hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
                     prefixIcon: Icon(Icons.lock, color: primaryColor),
                     border: InputBorder.none,
@@ -254,21 +221,34 @@ Future<void> _handleRegister() async {
               const SizedBox(height: 28),
 
               // Tombol Daftar
-              ElevatedButton(
-                onPressed: _handleRegister,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _handleRegister,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.coral,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  'Daftar',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  child: _isLoading
+                      ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Text(
+                    'Daftar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

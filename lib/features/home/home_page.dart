@@ -30,153 +30,34 @@ class _HomePageState extends State<HomePage> {
     'Minuman',
   ];
 
+  // PENTING: nama folder harus persis sama dengan di project: assets/Menu/ (M besar)
   final List<Map<String, dynamic>> recipes = [
-  {
-    'name': 'Nasi Goreng',
-    'category': 'Makanan utama',
-    'time': '20 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/nasi_goreng.jpg',
-  },
-  {
-    'name': 'Mie Goreng',
-    'category': 'Makanan utama',
-    'time': '20 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/mie_goreng.jpg',
-  },
-  {
-    'name': 'Ayam Goreng',
-    'category': 'Makanan utama',
-    'time': '35 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/ayam_goreng.jpg',
-  },
-  {
-    'name': 'Ayam Bakar',
-    'category': 'Makanan utama',
-    'time': '45 menit',
-    'rating': '4.9',
-    'image': 'assets/menu/ayam_bakar.jpg',
-  },
-  {
-    'name': 'Rendang',
-    'category': 'Makanan utama',
-    'time': '90 menit',
-    'rating': '4.9',
-    'image': 'assets/menu/rendang.jpg',
-  },
-  {
-    'name': 'Soto Ayam',
-    'category': 'Makanan utama',
-    'time': '40 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/soto_ayam.jpg',
-  },
-  {
-    'name': 'Bakso',
-    'category': 'Makanan utama',
-    'time': '30 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/bakso.jpg',
-  },
-  {
-    'name': 'Seblak',
-    'category': 'Camilan',
-    'time': '25 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/seblak.jpg',
-  },
-  {
-    'name': 'Capcay',
-    'category': 'Makanan utama',
-    'time': '25 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/capcay.jpg',
-  },
-  {
-    'name': 'Sayur Asem',
-    'category': 'Makanan utama',
-    'time': '30 menit',
-    'rating': '4.6',
-    'image': 'assets/menu/sayur_asem.jpg',
-  },
-  {
-    'name': 'Gado-Gado',
-    'category': 'Makanan utama',
-    'time': '25 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/gado_gado.jpg',
-  },
-  {
-    'name': 'Kwetiau Goreng',
-    'category': 'Makanan utama',
-    'time': '25 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/kwetiau_goreng.jpg',
-  },
-  {
-    'name': 'Spaghetti Bolognese',
-    'category': 'Makanan utama',
-    'time': '30 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/spaghetti_bolognese.jpg',
-  },
-  {
-    'name': 'Macaroni Schotel',
-    'category': 'Makanan utama',
-    'time': '45 menit',
-    'rating': '4.9',
-    'image': 'assets/menu/macaroni_schotel.jpg',
-  },
-  {
-    'name': 'Pancake',
-    'category': 'Sarapan',
-    'time': '15 menit',
-    'rating': '4.9',
-    'image': 'assets/menu/pancake.jpg',
-  },
-  {
-    'name': 'French Toast',
-    'category': 'Sarapan',
-    'time': '15 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/french_toast.jpg',
-  },
-  {
-    'name': 'Omelet',
-    'category': 'Sarapan',
-    'time': '10 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/omelet.jpg',
-  },
-  {
-    'name': 'Sup Ayam',
-    'category': 'Makanan utama',
-    'time': '35 menit',
-    'rating': '4.8',
-    'image': 'assets/menu/sup_ayam.jpg',
-  },
-  {
-    'name': 'Tumis Kangkung',
-    'category': 'Makanan utama',
-    'time': '15 menit',
-    'rating': '4.6',
-    'image': 'assets/menu/tumis_kangkung.jpg',
-  },
-  {
-    'name': 'Pisang Goreng',
-    'category': 'Camilan',
-    'time': '15 menit',
-    'rating': '4.7',
-    'image': 'assets/menu/pisang_goreng.jpg',
-  },
-];
+    {'name': 'Nasi Goreng', 'category': 'Makanan utama', 'time': '20 menit', 'rating': '4.8', 'image': 'assets/Menu/nasi_goreng.jpg'},
+    {'name': 'Mie Goreng', 'category': 'Makanan utama', 'time': '20 menit', 'rating': '4.7', 'image': 'assets/Menu/mie_goreng.jpg'},
+    {'name': 'Ayam Goreng', 'category': 'Makanan utama', 'time': '35 menit', 'rating': '4.8', 'image': 'assets/Menu/ayam_goreng.jpg'},
+    {'name': 'Ayam Bakar', 'category': 'Makanan utama', 'time': '45 menit', 'rating': '4.9', 'image': 'assets/Menu/ayam_bakar.jpg'},
+    {'name': 'Rendang', 'category': 'Makanan utama', 'time': '90 menit', 'rating': '4.9', 'image': 'assets/Menu/rendang.jpg'},
+    {'name': 'Soto Ayam', 'category': 'Makanan utama', 'time': '40 menit', 'rating': '4.8', 'image': 'assets/Menu/soto_ayam.jpg'},
+    {'name': 'Bakso', 'category': 'Makanan utama', 'time': '30 menit', 'rating': '4.7', 'image': 'assets/Menu/bakso.jpg'},
+    {'name': 'Seblak', 'category': 'Camilan', 'time': '25 menit', 'rating': '4.8', 'image': 'assets/Menu/seblak.jpg'},
+    {'name': 'Capcay', 'category': 'Makanan utama', 'time': '25 menit', 'rating': '4.7', 'image': 'assets/Menu/capcay.jpg'},
+    {'name': 'Sayur Asem', 'category': 'Makanan utama', 'time': '30 menit', 'rating': '4.6', 'image': 'assets/Menu/sayur_asem.jpg'},
+    {'name': 'Gado-Gado', 'category': 'Makanan utama', 'time': '25 menit', 'rating': '4.8', 'image': 'assets/Menu/gado_gado.jpg'},
+    {'name': 'Kwetiau Goreng', 'category': 'Makanan utama', 'time': '25 menit', 'rating': '4.7', 'image': 'assets/Menu/kwetiau_goreng.jpg'},
+    {'name': 'Spaghetti Bolognese', 'category': 'Makanan utama', 'time': '30 menit', 'rating': '4.8', 'image': 'assets/Menu/spaghetti_bolognese.jpg'},
+    {'name': 'Macaroni Schotel', 'category': 'Makanan utama', 'time': '45 menit', 'rating': '4.9', 'image': 'assets/Menu/macaroni_schotel.jpg'},
+    {'name': 'Pancake', 'category': 'Sarapan', 'time': '15 menit', 'rating': '4.9', 'image': 'assets/Menu/pancake.jpg'},
+    {'name': 'French Toast', 'category': 'Sarapan', 'time': '15 menit', 'rating': '4.7', 'image': 'assets/Menu/french_toast.jpg'},
+    {'name': 'Omelet', 'category': 'Sarapan', 'time': '10 menit', 'rating': '4.7', 'image': 'assets/Menu/omelet.jpg'},
+    {'name': 'Sup Ayam', 'category': 'Makanan utama', 'time': '35 menit', 'rating': '4.8', 'image': 'assets/Menu/sup_ayam.jpg'},
+    {'name': 'Tumis Kangkung', 'category': 'Makanan utama', 'time': '15 menit', 'rating': '4.6', 'image': 'assets/Menu/tumis_kangkung.jpg'},
+    {'name': 'Pisang Goreng', 'category': 'Camilan', 'time': '15 menit', 'rating': '4.7', 'image': 'assets/Menu/pisang_goreng.jpg'},
+  ];
 
   List<Map<String, dynamic>> get filteredRecipes {
     return recipes.where((recipe) {
-      final matchesCategory = selectedCategory == 'Semua' ||
-          recipe['category'] == selectedCategory;
+      final matchesCategory =
+          selectedCategory == 'Semua' || recipe['category'] == selectedCategory;
 
       final matchesSearch = recipe['name']
           .toString()
@@ -214,18 +95,15 @@ class _HomePageState extends State<HomePage> {
                   const CircleAvatar(
                     radius: 25,
                     backgroundColor: yellowColor,
-                    child: Icon(
-                      Icons.person,
-                      color: brownColor,
-                      size: 30,
-                    ),
+                    child: Icon(Icons.person, color: brownColor, size: 30),
                   ),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hai, ${AuthService.instance.currentUserName ?? 'User'}!',
+                        // sebelumnya: currentUserName (sudah tidak ada di AuthService baru)
+                        'Hai, ${AuthService.instance.displayName}!',
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -235,10 +113,7 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 3),
                       const Text(
                         'Mau masak apa hari ini?',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.brown,
-                        ),
+                        style: TextStyle(fontSize: 13, color: Colors.brown),
                       ),
                     ],
                   ),
@@ -253,10 +128,7 @@ class _HomePageState extends State<HomePage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(25),
-                  border: Border.all(
-                    color: primaryColor,
-                    width: 1.5,
-                  ),
+                  border: Border.all(color: primaryColor, width: 1.5),
                 ),
                 child: TextField(
                   controller: _searchController,
@@ -267,14 +139,8 @@ class _HomePageState extends State<HomePage> {
                   },
                   decoration: InputDecoration(
                     hintText: 'Cari resep atau bahan masakan...',
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 13,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: primaryColor,
-                    ),
+                    hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
+                    prefixIcon: const Icon(Icons.search, color: primaryColor),
                     suffixIcon: searchQuery.isNotEmpty
                         ? IconButton(
                       icon: const Icon(Icons.close),
@@ -287,9 +153,7 @@ class _HomePageState extends State<HomePage> {
                     )
                         : null,
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 14,
-                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
               ),
@@ -308,14 +172,13 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 12),
 
-              // ChoiceChips Kategori
+              // ChoiceChips kategori
               SizedBox(
                 height: 42,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: categories.length,
-                  separatorBuilder: (context, index) =>
-                  const SizedBox(width: 8),
+                  separatorBuilder: (context, index) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
                     final category = categories[index];
                     final isSelected = selectedCategory == category;
@@ -336,17 +199,13 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 13,
                       ),
                       side: BorderSide(
-                        color: isSelected
-                            ? primaryColor
-                            : const Color(0xFFE8D8C8),
+                        color: isSelected ? primaryColor : const Color(0xFFE8D8C8),
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                       showCheckmark: false,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                     );
                   },
                 ),
@@ -369,35 +228,25 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Text(
                     '${filteredRecipes.length} resep',
-                    style: const TextStyle(
-                      color: Colors.brown,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: Colors.brown, fontSize: 12),
                   ),
                 ],
               ),
 
               const SizedBox(height: 12),
 
-              // Lista Resep
+              // Daftar resep
               Expanded(
                 child: filteredRecipes.isEmpty
                     ? const Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.search_off,
-                        size: 55,
-                        color: Colors.grey,
-                      ),
+                      Icon(Icons.search_off, size: 55, color: Colors.grey),
                       SizedBox(height: 10),
                       Text(
                         'Resep tidak ditemukan',
-                        style: TextStyle(
-                          color: brownColor,
-                          fontSize: 15,
-                        ),
+                        style: TextStyle(color: brownColor, fontSize: 15),
                       ),
                     ],
                   ),
@@ -417,29 +266,36 @@ class _HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: const Color(0xFFE8D8C8),
-                        ),
+                        border: Border.all(color: const Color(0xFFE8D8C8)),
                       ),
                       child: Stack(
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                height: 145,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: yellowColor.withOpacity(0.35),
-                                  borderRadius:
-                                  const BorderRadius.vertical(
-                                    top: Radius.circular(15),
-                                  ),
+                              // Gambar resep
+                              ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(15),
                                 ),
-                                child: Icon(
-                                  recipe['icon'] as IconData,
-                                  size: 65,
-                                  color: brownColor,
+                                child: Image.asset(
+                                  recipe['image'] as String,
+                                  width: double.infinity,
+                                  height: 145,
+                                  fit: BoxFit.cover,
+                                  // Kalau path gambar salah, tampil placeholder (bukan layar merah)
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 145,
+                                      width: double.infinity,
+                                      color: yellowColor.withOpacity(0.35),
+                                      child: const Icon(
+                                        Icons.restaurant,
+                                        size: 65,
+                                        color: brownColor,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                               Padding(
@@ -463,39 +319,11 @@ class _HomePageState extends State<HomePage> {
                                           Icons.star,
                                           size: 17,
                                           color: yellowColor,
-                              children: [
-                                // Area gambar sementara
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(15),
-                                  ),
-                                  child: Image.asset(
-                                    recipe['image'] as String,
-                                    width: double.infinity,
-                                    height: 145,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.all(14),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        recipe['name'] as String,
-                                        style: const TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
-                                          color: brownColor,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
                                           recipe['rating'] as String,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                          ),
+                                          style: const TextStyle(fontSize: 12),
                                         ),
                                         const SizedBox(width: 16),
                                         const Icon(
@@ -506,14 +334,11 @@ class _HomePageState extends State<HomePage> {
                                         const SizedBox(width: 4),
                                         Text(
                                           recipe['time'] as String,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                          ),
+                                          style: const TextStyle(fontSize: 12),
                                         ),
                                         const Spacer(),
                                         Container(
-                                          padding:
-                                          const EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                             horizontal: 10,
                                             vertical: 5,
                                           ),
@@ -538,7 +363,7 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
 
-                          // Tombol Ikon Hati Favorit
+                          // Tombol hati favorit
                           Positioned(
                             top: 10,
                             right: 10,
