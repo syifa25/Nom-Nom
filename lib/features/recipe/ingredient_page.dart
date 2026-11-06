@@ -19,7 +19,7 @@ class IngredientPage extends StatefulWidget {
 class _IngredientPageState extends State<IngredientPage> {
   final Set<String> selectedIngredients = {};
 
-  final List<Map<String, String>> ingredients = [
+  List<Map<String, String>> ingredients = [
     {
       'name': 'Ayam',
       'image': 'assets/ingredients/ayam.png',
@@ -30,15 +30,15 @@ class _IngredientPageState extends State<IngredientPage> {
     },
     {
       'name': 'Daging Sapi',
-      'image': 'assets/ingredients/daging.jpeg',
+      'image': 'assets/ingredients/daging.png',
     },
     {
       'name': 'Ikan',
-      'image': 'assets/ingredients/ikan.jpeg',
+      'image': 'assets/ingredients/ikan.png',
     },
     {
       'name': 'Udang',
-      'image': 'assets/ingredients/udang.jpeg',
+      'image': 'assets/ingredients/udang.png',
     },
     {
       'name': 'Tahu',
@@ -78,6 +78,85 @@ class _IngredientPageState extends State<IngredientPage> {
         selectedIngredients.add(name);
       }
     });
+  }
+  Widget _buildAddCard(){
+    return GestureDetector(
+      onTap: () => _showAddIngredientModal(context),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: AppColors.coral.withValues(alpha: 0.4),
+            width: 2,
+            style: BorderStyle.solid,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0,3),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.coral.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.add_rounded,
+                  color: AppColors.coral,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Tambah',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.coral,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAddIngredientModal(BuildContext context){
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController imageController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context, 
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24))
+      ),
+      builder: (context){
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24, 
+            24, 
+            MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+        ),
+        child:
+      }
+      
+      ),
   }
 
   void nextPage() {
@@ -173,7 +252,7 @@ class _IngredientPageState extends State<IngredientPage> {
                   20,
                   20,
                 ),
-                itemCount: ingredients.length,
+                itemCount: ingredients.length + 1,
                 gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
@@ -188,6 +267,11 @@ class _IngredientPageState extends State<IngredientPage> {
                     name: ingredient['name']!,
                     image: ingredient['image']!,
                   );
+                  if (index == ingredient.length){
+                    return _buildAddCard();
+                  }
+
+                  return _buildIngredientCard(name: ingredient[index]['name'], image: ingredient[index]['image']);
                 },
               ),
             ),
