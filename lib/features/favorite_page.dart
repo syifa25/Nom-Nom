@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-
+import 'package:nom_nom/features/home/recipe_detail_page.dart';
 class FavoritPage extends StatelessWidget {
   final List<Map<String, dynamic>> favoriteRecipes;
   final Function(Map<String, dynamic>)? onRemoveFavorite;
 
   const FavoritPage({
     super.key,
-    this.favoriteRecipes = const [],
+    required this.favoriteRecipes,
     this.onRemoveFavorite,
   });
 
@@ -34,8 +34,6 @@ class FavoritPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Jika Belum Ada Favorit (Empty State)
               if (favoriteRecipes.isEmpty)
                 Expanded(
                   child: Center(
@@ -45,7 +43,7 @@ class FavoritPage extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: primaryColor.withOpacity(0.1),
+                            color: primaryColor.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -77,7 +75,6 @@ class FavoritPage extends StatelessWidget {
                   ),
                 )
               else
-              // Jika Ada Resep Favorit
                 Expanded(
                   child: GridView.builder(
                     itemCount: favoriteRecipes.length,
@@ -89,84 +86,104 @@ class FavoritPage extends StatelessWidget {
                     ),
                     itemBuilder: (context, index) {
                       final item = favoriteRecipes[index];
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFFE8D8C8)),
-                        ),
-                        child: Stack(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: 95,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: yellowColor.withOpacity(0.35),
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecipeDetailPage(
+                                recipe: item,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: const Color(0xFFE8D8C8)),
+                          ),
+                          child: Stack(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
                                     borderRadius: const BorderRadius.vertical(
                                       top: Radius.circular(15),
                                     ),
+                                    child: Image.asset(
+                                      item['image'] as String? ?? '',
+                                      height: 105,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          height: 105,
+                                          width: double.infinity,
+                                          color: yellowColor.withValues(alpha: 0.35),
+                                          child: const Icon(
+                                            Icons.restaurant,
+                                            size: 40,
+                                            color: brownColor,
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ),
-                                  child: Icon(
-                                    item['icon'] as IconData? ?? Icons.restaurant,
-                                    color: brownColor,
-                                    size: 40,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item['name'] ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: brownColor,
+                                  Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item['name'] ?? '',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: brownColor,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '${item['time']} · ${item['rating']} ★',
-                                        style: const TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.brown,
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${item['time']} · ${item['rating']} ★',
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                            color: Colors.brown,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (onRemoveFavorite != null) {
-                                    onRemoveFavorite!(item);
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.favorite,
-                                    color: primaryColor,
-                                    size: 16,
+                                ],
+                              ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (onRemoveFavorite != null) {
+                                      onRemoveFavorite!(item);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.favorite,
+                                      color: primaryColor,
+                                      size: 16,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },

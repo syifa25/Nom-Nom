@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nom_nom/service/auth_service.dart';
+import 'recipe_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   final List<Map<String, dynamic>> favoriteRecipes;
@@ -26,11 +27,8 @@ class _HomePageState extends State<HomePage> {
     'Sarapan',
     'Makanan utama',
     'Camilan',
-    'Dessert',
-    'Minuman',
   ];
 
-  // PENTING: nama folder harus persis sama dengan di project: assets/Menu/ (M besar)
   final List<Map<String, dynamic>> recipes = [
     {'name': 'Nasi Goreng', 'category': 'Makanan utama', 'time': '20 menit', 'rating': '4.8', 'image': 'assets/Menu/nasi_goreng.jpg'},
     {'name': 'Mie Goreng', 'category': 'Makanan utama', 'time': '20 menit', 'rating': '4.7', 'image': 'assets/Menu/mie_goreng.jpg'},
@@ -102,7 +100,9 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hai, ${AuthService.instance.displayName ?? AuthService.instance.currentUserName ?? 'Sobat'}!',
+                        // displayName sudah pasti berisi teks (tidak null),
+                        // dan currentUserName sudah tidak ada di AuthService baru
+                        'Hai, ${AuthService.instance.displayName}!',
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -159,7 +159,6 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 24),
 
-              // Judul kategori
               const Text(
                 'Kategori Masakan',
                 style: TextStyle(
@@ -212,7 +211,6 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 22),
 
-              // Judul daftar resep
               Row(
                 children: [
                   const Expanded(
@@ -261,132 +259,143 @@ class _HomePageState extends State<HomePage> {
                           (item) => item['name'] == recipe['name'],
                     );
 
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE8D8C8)),
-                      ),
-                      child: Stack(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Gambar resep
-                              ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(15),
+                    return GestureDetector(
+                      // (onTemplateTap dihapus: parameter itu tidak ada di Flutter)
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RecipeDetailPage(
+                              recipe: recipe,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFFE8D8C8)),
+                        ),
+                        child: Stack(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(15),
+                                  ),
+                                  child: Image.asset(
+                                    recipe['image'] as String,
+                                    width: double.infinity,
+                                    height: 145,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        height: 145,
+                                        width: double.infinity,
+                                        color: yellowColor.withValues(alpha: 0.35),
+                                        child: const Icon(
+                                          Icons.restaurant,
+                                          size: 65,
+                                          color: brownColor,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                                child: Image.asset(
-                                  recipe['image'] as String,
-                                  width: double.infinity,
-                                  height: 145,
-                                  fit: BoxFit.cover,
-                                  // Kalau path gambar salah, tampil placeholder (bukan layar merah)
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      height: 145,
-                                      width: double.infinity,
-                                      color: yellowColor.withOpacity(0.35),
-                                      child: const Icon(
-                                        Icons.restaurant,
-                                        size: 65,
-                                        color: brownColor,
+                                Padding(
+                                  padding: const EdgeInsets.all(14),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        recipe['name'] as String,
+                                        style: const TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                          color: brownColor,
+                                        ),
                                       ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(14),
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      recipe['name'] as String,
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                        color: brownColor,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.star,
-                                          size: 17,
-                                          color: yellowColor,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          recipe['rating'] as String,
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        const Icon(
-                                          Icons.access_time,
-                                          size: 16,
-                                          color: primaryColor,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          recipe['time'] as String,
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                        const Spacer(),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 5,
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.star,
+                                            size: 17,
+                                            color: yellowColor,
                                           ),
-                                          decoration: BoxDecoration(
-                                            color: backgroundColor,
-                                            borderRadius:
-                                            BorderRadius.circular(12),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            recipe['rating'] as String,
+                                            style: const TextStyle(fontSize: 12),
                                           ),
-                                          child: Text(
-                                            recipe['category'] as String,
-                                            style: const TextStyle(
-                                              color: brownColor,
-                                              fontSize: 10,
+                                          const SizedBox(width: 16),
+                                          const Icon(
+                                            Icons.access_time,
+                                            size: 16,
+                                            color: primaryColor,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            recipe['time'] as String,
+                                            style: const TextStyle(fontSize: 12),
+                                          ),
+                                          const Spacer(),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 5,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: backgroundColor,
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              recipe['category'] as String,
+                                              style: const TextStyle(
+                                                color: brownColor,
+                                                fontSize: 10,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
 
-                          // Tombol hati favorit
-                          Positioned(
-                            top: 10,
-                            right: 10,
-                            child: GestureDetector(
-                              onTap: () {
-                                widget.onToggleFavorite(recipe);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  isFav
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: primaryColor,
-                                  size: 20,
+                            // Tombol hati favorit
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: GestureDetector(
+                                onTap: () {
+                                  widget.onToggleFavorite(recipe);
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    isFav
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: primaryColor,
+                                    size: 20,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },
