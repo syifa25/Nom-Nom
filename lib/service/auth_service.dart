@@ -34,7 +34,9 @@ class AuthService {
 
   User? get currentUser => client.auth.currentUser;
 
-  get displayName => null;
+  //get displayName => null;
+
+  String? get displayName => currentUserName;
 
   void _updateUser() {
     final user = client.auth.currentUser;

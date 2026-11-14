@@ -102,8 +102,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        // sebelumnya: currentUserName (sudah tidak ada di AuthService baru)
-                        'Hai, ${AuthService.instance.displayName}!',
+                        'Hai, ${AuthService.instance.displayName ?? AuthService.instance.currentUserName ?? 'Sobat'}!',
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
