@@ -1,6 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../service/auth_service.dart';
-import '../theme/app_colors.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:nom_nom/service/auth_service.dart';
 import 'login_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -11,95 +12,240 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  File? _profileImage;
+  final ImagePicker _picker = ImagePicker();
+
+  // Fungsi untuk memilih gambar dari Galeri atau Kamera
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 80,
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _profileImage = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+    }
+  }
+
+  // Menampilkan pilihan sumber gambar atau hapus foto di satu tempat (ikon kamera)
+  void _showImageSourceActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library, color: Color(0xFFE66A3C)),
+                title: const Text('Pilih dari Galeri'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: Color(0xFFE66A3C)),
+                title: const Text('Ambil dari Kamera'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              if (_profileImage != null)
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  title: const Text(
+                    'Hapus Foto Profil',
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      _profileImage = null;
+                    });
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Dialog Pengaturan Akun: Hanya untuk Ubah Nama Saja
+  void _showAccountSettingsDialog() {
+    final nameController = TextEditingController(
+      text: AuthService.instance.currentUserName ?? 'Nina',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Pengaturan Akun',
+            style: TextStyle(
+              color: Color(0xFF8B3E20),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Ubah Nama Lengkap',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE66A3C),
+              ),
+              onPressed: () {
+                setState(() {
+                  AuthService.instance.currentUserName = nameController.text;
+                });
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Nama berhasil diperbarui')),
+                );
+              },
+              child: const Text(
+                'Simpan',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final userName = AuthService.instance.currentUserName ?? 'Pengguna NomNom';
-    final userEmail = AuthService.instance.currentUserEmail ?? 'email@domain.com';
+    const backgroundColor = Color(0xFFFFF4E5);
+    const primaryColor = Color(0xFFE66A3C);
+    const brownColor = Color(0xFF8B3E20);
+
+    final userName = AuthService.instance.currentUserName ?? 'Nina';
+    final userEmail = AuthService.instance.currentUserEmail ?? 'vioneryn@gmail.com';
     final initialLetter = userName.isNotEmpty ? userName[0].toUpperCase() : 'U';
 
     return Scaffold(
-      backgroundColor: AppColors.bgPage,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
             children: [
               const SizedBox(height: 10),
-              // Circle Avatar Sesuai Inisial Nama User
-              CircleAvatar(
-                radius: 45,
-                backgroundColor: const Color(0xFFD36327),
-                child: Text(
-                  initialLetter,
-                  style: const TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+
+              // --- FOTO PROFIL ---
+              Center(
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: primaryColor,
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!) as ImageProvider
+                          : null,
+                      child: _profileImage == null
+                          ? Text(
+                        initialLetter,
+                        style: const TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      )
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _showImageSourceActionSheet,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: brownColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 12),
 
-              // Nama & Email Dinamis
+              const SizedBox(height: 16),
+
+              // --- NAMA & EMAIL ---
               Text(
                 userName,
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: brownColor,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 userEmail,
                 style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey,
+                  fontSize: 14,
+                  color: Colors.brown,
                 ),
               ),
-              const SizedBox(height: 20),
 
-              // Card Statistik (18 Favorit | 42 Resep Dicoba | 7 Hari Berturut)
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildStatItem('18', 'Favorit'),
-                    _buildStatItem('42', 'Resep Dicoba'),
-                    _buildStatItem('7', 'Hari Berturut'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
-              // List Menu Pilihan (Preferensi Diet & Resep Pribadi Sudah Dihapus)
+              // --- LIST MENU PILIHAN ---
               _buildMenuItem(
                 Icons.calendar_month_rounded,
                 'Rencana Masak (Meal Plan)',
                 const Color(0xFF6C8EBF),
-                onTap: () {
-                  // Aksi untuk membuka Rencana Masak
-                },
+                onTap: () {},
               ),
               _buildMenuItem(
                 Icons.settings_outlined,
                 'Pengaturan Akun',
-                const Color(0xFF9E9E9E),
+                brownColor,
+                onTap: _showAccountSettingsDialog, // Khusus ubah nama
               ),
               _buildMenuItem(
-                Icons.help_outline_rounded,
-                'Bantuan',
-                const Color(0xFFE53935),
-              ),
-              _buildMenuItem(
-                Icons.door_sliding_outlined,
+                Icons.logout_rounded,
                 'Keluar',
-                const Color(0xFFD36327),
+                primaryColor,
                 isLogout: true,
                 onTap: () {
                   AuthService.instance.logout();
@@ -116,29 +262,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildStatItem(String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFFD36327),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildMenuItem(
       IconData icon,
       String title,
@@ -147,10 +270,11 @@ class _ProfilePageState extends State<ProfilePage> {
         VoidCallback? onTap,
       }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE8D8C8)),
       ),
       child: ListTile(
         onTap: onTap,
@@ -160,8 +284,13 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: isLogout ? const Color(0xFFD36327) : Colors.black87,
+            color: isLogout ? iconColor : const Color(0xFF8B3E20),
           ),
+        ),
+        trailing: const Icon(
+          Icons.arrow_forward_ios_rounded,
+          size: 14,
+          color: Colors.grey,
         ),
       ),
     );
