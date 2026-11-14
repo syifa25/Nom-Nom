@@ -1,6 +1,7 @@
-import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../../service/ai_recipe_service.dart';
 import 'recommendation_page.dart';
 
 class RecipeLoadingPage extends StatefulWidget {
@@ -16,39 +17,47 @@ class RecipeLoadingPage extends StatefulWidget {
   });
 
   @override
-  State<RecipeLoadingPage> createState() => _RecipeLoadingPageState();
+  State<RecipeLoadingPage> createState() =>
+      _RecipeLoadingPageState();
 }
 
 class _RecipeLoadingPageState extends State<RecipeLoadingPage> {
-  Timer? _timer;
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-
-    _timer = Timer(
-      const Duration(seconds: 4),
-      () {
-        if (!mounted) return;
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RecommendationPage(
-              portions: widget.portions,
-              selectedIngredients: widget.selectedIngredients,
-              selectedTools: widget.selectedTools,
-            ),
-          ),
-        );
-      },
-    );
+    generateRecipes();
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+  Future<void> generateRecipes() async {
+    try {
+      final recipes = await AiRecipeService().generateRecipes(
+        ingredients: widget.selectedIngredients,
+        tools: widget.selectedTools,
+        portions: widget.portions,
+      );
+
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RecommendationPage(
+            portions: widget.portions,
+            selectedIngredients: widget.selectedIngredients,
+            selectedTools: widget.selectedTools,
+            recipes: recipes,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        errorMessage = e.toString();
+      });
+    }
   }
 
   @override
@@ -58,9 +67,7 @@ class _RecipeLoadingPageState extends State<RecipeLoadingPage> {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 32,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -73,10 +80,12 @@ class _RecipeLoadingPageState extends State<RecipeLoadingPage> {
 
                 const SizedBox(height: 35),
 
-                const Text(
-                  'Sedang membuat\nrekomendasi untukmu...',
+                Text(
+                  errorMessage == null
+                      ? 'Sedang membuat\nrekomendasi untukmu...'
+                      : 'Yah, rekomendasi gagal dibuat',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 23,
                     fontWeight: FontWeight.w700,
@@ -87,7 +96,9 @@ class _RecipeLoadingPageState extends State<RecipeLoadingPage> {
                 const SizedBox(height: 14),
 
                 Text(
-                  'Tunggu sebentar ya 🍳',
+                  errorMessage ??
+                      'Nom-Nom AI sedang mencari resep terbaik 🍳',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColors.textPrimary.withValues(
                       alpha: 0.60,
@@ -98,14 +109,40 @@ class _RecipeLoadingPageState extends State<RecipeLoadingPage> {
 
                 const SizedBox(height: 30),
 
-                const SizedBox(
-                  width: 35,
-                  height: 35,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    color: AppColors.coral,
+                if (errorMessage == null)
+                  const SizedBox(
+                    width: 35,
+                    height: 35,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: AppColors.coral,
+                    ),
+                  )
+                else ...[
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        errorMessage = null;
+                      });
+                      generateRecipes();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.coral,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Coba Lagi'),
                   ),
-                ),
+
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Kembali',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

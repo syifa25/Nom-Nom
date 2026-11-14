@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nom_nom/features/login_page.dart';
@@ -7,8 +8,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url: 'https://hwspqocyfrqeopdcdxiw.supabase.co',
-    anonKey: 'sb_publishable__VYKLGfaJp9ay3Ic7aYqeQ_qSNikjm-',
+    url: 'https://dvomqngagwnslomakahh.supabase.co',
+    anonKey: 'sb_publishable_7PsDiW3IHXNfxsFAKjgQjQ_Y3q1oOmy',
   );
 
   runApp(const NomNomApp());
@@ -41,7 +42,8 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
 
-      final session = Supabase.instance.client.auth.currentSession;
+      final session =
+          Supabase.instance.client.auth.currentSession;
 
       Navigator.pushReplacement(
         context,
