@@ -1,5 +1,8 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../theme/app_colors.dart';
 import 'cooking_tool_page.dart';
@@ -19,6 +22,10 @@ class IngredientPage extends StatefulWidget {
 class _IngredientPageState extends State<IngredientPage> {
   final Set<String> selectedIngredients = {};
 
+  static const String _storageKey = 'nomnom_custom_ingredients';
+
+  bool isLoading = true;
+
   List<Map<String, String>> ingredients = [
     {'name': 'Ayam', 'image': 'assets/ingredients/ayam.png'},
     {'name': 'Telur', 'image': 'assets/ingredients/telur.png'},
@@ -34,7 +41,79 @@ class _IngredientPageState extends State<IngredientPage> {
     {'name': 'Cabai', 'image': 'assets/ingredients/cabai.png'},
   ];
 
-  // Memilih atau membatalkan pilihan bahan
+  List<Map<String, String>> customIngredients = [];
+
+  final List<String> categories = [
+    'Sayuran',
+    'Daging',
+    'Seafood',
+    'Buah',
+    'Bumbu',
+    'Karbohidrat',
+    'Produk Susu',
+    'Lainnya',
+  ];
+
+  final Map<String, IconData> categoryIcons = {
+    'Sayuran': Icons.eco_rounded,
+    'Daging': Icons.set_meal_rounded,
+    'Seafood': Icons.phishing_rounded,
+    'Buah': Icons.apple_rounded,
+    'Bumbu': Icons.spa_rounded,
+    'Karbohidrat': Icons.grass_rounded,
+    'Produk Susu': Icons.local_drink_rounded,
+    'Lainnya': Icons.restaurant_rounded,
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCustomIngredients();
+  }
+
+  Future<void> _loadCustomIngredients() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedData = prefs.getString(_storageKey);
+
+      if (savedData != null) {
+        final List<dynamic> decodedData = jsonDecode(savedData);
+
+        customIngredients = decodedData.map((item) {
+          return Map<String, String>.from(item);
+        }).toList();
+      }
+    } catch (e) {
+      debugPrint('Gagal memuat bahan: $e');
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _saveCustomIngredients() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(
+      _storageKey,
+      jsonEncode(customIngredients),
+    );
+  }
+
+  List<Map<String, String>> get allIngredients {
+    return [
+      ...ingredients,
+      ...customIngredients,
+    ];
+  }
+
+  IconData _getCategoryIcon(String category) {
+    return categoryIcons[category] ?? Icons.restaurant_rounded;
+  }
+
   void toggleIngredient(String name) {
     setState(() {
       if (selectedIngredients.contains(name)) {
@@ -45,7 +124,6 @@ class _IngredientPageState extends State<IngredientPage> {
     });
   }
 
-  // Card untuk menambahkan bahan baru
   Widget _buildAddCard() {
     return GestureDetector(
       onTap: _showAddIngredientModal,
@@ -99,10 +177,9 @@ class _IngredientPageState extends State<IngredientPage> {
     );
   }
 
-  // Bottom sheet tambah bahan
   void _showAddIngredientModal() {
     final nameController = TextEditingController();
-    final imageController = TextEditingController();
+    String selectedCategory = 'Sayuran';
 
     showModalBottomSheet(
       context: context,
@@ -114,128 +191,168 @@ class _IngredientPageState extends State<IngredientPage> {
         ),
       ),
       builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            24,
-            24,
-            24,
-            MediaQuery.of(sheetContext).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Tambah Bahan Makanan',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                24,
+                24,
+                24,
+                MediaQuery.of(context).viewInsets.bottom + 24,
               ),
-
-              const SizedBox(height: 18),
-
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nama Bahan',
-                  hintText: 'Contoh: Brokoli',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              TextField(
-                controller: imageController,
-                decoration: const InputDecoration(
-                  labelText: 'Path Gambar (Opsional)',
-                  hintText: 'assets/ingredients/brokoli.png',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.coral,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    final name = nameController.text.trim();
-                    final image = imageController.text.trim();
-
-                    // Validasi nama
-                    if (name.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Nama bahan wajib diisi'),
-                        ),
-                      );
-                      return;
-                    }
-
-                    // Validasi bahan duplikat
-                    final isDuplicate = ingredients.any(
-                      (item) =>
-                          (item['name'] ?? '').toLowerCase() ==
-                          name.toLowerCase(),
-                    );
-
-                    if (isDuplicate) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Bahan sudah tersedia'),
-                        ),
-                      );
-                      return;
-                    }
-
-                    // Menambahkan bahan ke daftar
-                    setState(() {
-                      ingredients.add({
-                        'name': name,
-                        'image': image,
-                      });
-                    });
-
-                    Navigator.pop(sheetContext);
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('$name berhasil ditambahkan'),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Simpan Bahan',
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Tambah Bahan Makanan',
                     style: TextStyle(
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 18),
+                  TextField(
+                    controller: nameController,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Nama Bahan',
+                      hintText: 'Contoh: Brokoli',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedCategory,
+                    decoration: const InputDecoration(
+                      labelText: 'Kategori Bahan',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: categories.map((category) {
+                      return DropdownMenuItem<String>(
+                        value: category,
+                        child: Row(
+                          children: [
+                            Icon(
+                              _getCategoryIcon(category),
+                              color: AppColors.coral,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(category),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setModalState(() {
+                          selectedCategory = value;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.coral,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final name = nameController.text.trim();
+
+                        if (name.isEmpty) {
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Nama bahan wajib diisi'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        final isDuplicate = allIngredients.any(
+                          (item) =>
+                              (item['name'] ?? '').toLowerCase() ==
+                              name.toLowerCase(),
+                        );
+
+                        if (isDuplicate) {
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Bahan sudah tersedia'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        final newIngredient = {
+                          'name': name,
+                          'image': '',
+                          'category': selectedCategory,
+                        };
+
+                        setState(() {
+                          customIngredients.add(newIngredient);
+                        });
+
+                        try {
+                          await _saveCustomIngredients();
+
+                          if (!mounted) return;
+
+                          Navigator.pop(sheetContext);
+
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '$name berhasil ditambahkan',
+                              ),
+                            ),
+                          );
+                        } catch (e) {
+                          if (!mounted) return;
+
+                          setState(() {
+                            customIngredients.remove(newIngredient);
+                          });
+
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Gagal menyimpan bahan. Silakan coba lagi.',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text(
+                        'Simpan Bahan',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     ).whenComplete(() {
       nameController.dispose();
-      imageController.dispose();
     });
   }
 
-  // Navigasi ke halaman alat masak
   void nextPage() {
     if (selectedIngredients.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -265,7 +382,6 @@ class _IngredientPageState extends State<IngredientPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgPage,
-
       appBar: AppBar(
         backgroundColor: AppColors.bgPage,
         elevation: 0,
@@ -288,11 +404,9 @@ class _IngredientPageState extends State<IngredientPage> {
           ),
         ),
       ),
-
       body: SafeArea(
         child: Column(
           children: [
-            // Judul halaman
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 24,
@@ -311,9 +425,7 @@ class _IngredientPageState extends State<IngredientPage> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-
                   const SizedBox(height: 6),
-
                   Text(
                     'Pilih bahan yang tersedia di dapurmu.',
                     style: TextStyle(
@@ -326,44 +438,43 @@ class _IngredientPageState extends State<IngredientPage> {
                 ],
               ),
             ),
-
-            // Grid bahan makanan
             Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  0,
-                  20,
-                  20,
-                ),
+              child: isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.coral,
+                      ),
+                    )
+                  : GridView.builder(
+                      padding: const EdgeInsets.fromLTRB(
+                        20,
+                        0,
+                        20,
+                        20,
+                      ),
+                      itemCount: allIngredients.length + 1,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.82,
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index == allIngredients.length) {
+                          return _buildAddCard();
+                        }
 
-                itemCount: ingredients.length + 1,
+                        final ingredient = allIngredients[index];
 
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.82,
-                ),
-
-                itemBuilder: (context, index) {
-                  // Card tambah berada di akhir grid
-                  if (index == ingredients.length) {
-                    return _buildAddCard();
-                  }
-
-                  final ingredient = ingredients[index];
-
-                  return _buildIngredientCard(
-                    name: ingredient['name'] ?? '',
-                    image: ingredient['image'] ?? '',
-                  );
-                },
-              ),
+                        return _buildIngredientCard(
+                          name: ingredient['name'] ?? '',
+                          image: ingredient['image'] ?? '',
+                          category: ingredient['category'] ?? '',
+                        );
+                      },
+                    ),
             ),
-
-            // Tombol berikutnya
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 20,
@@ -400,10 +511,10 @@ class _IngredientPageState extends State<IngredientPage> {
     );
   }
 
-  // Card bahan makanan
   Widget _buildIngredientCard({
     required String name,
     required String image,
+    String category = '',
   }) {
     final bool isSelected = selectedIngredients.contains(name);
 
@@ -411,7 +522,6 @@ class _IngredientPageState extends State<IngredientPage> {
       onTap: () => toggleIngredient(name),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
@@ -429,7 +539,6 @@ class _IngredientPageState extends State<IngredientPage> {
             ),
           ],
         ),
-
         child: Stack(
           children: [
             Center(
@@ -439,34 +548,41 @@ class _IngredientPageState extends State<IngredientPage> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
-                      child: image.isEmpty
+                      child: category.isNotEmpty
                           ? Icon(
-                              Icons.fastfood_rounded,
+                              _getCategoryIcon(category),
                               size: 48,
                               color: AppColors.coral.withValues(
                                 alpha: 0.7,
                               ),
                             )
-                          : Image.asset(
-                              image,
-                              fit: BoxFit.contain,
-                              errorBuilder: (
-                                context,
-                                error,
-                                stackTrace,
-                              ) {
-                                return Icon(
+                          : image.isEmpty
+                              ? Icon(
                                   Icons.fastfood_rounded,
                                   size: 48,
                                   color: AppColors.coral.withValues(
                                     alpha: 0.7,
                                   ),
-                                );
-                              },
-                            ),
+                                )
+                              : Image.asset(
+                                  image,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (
+                                    context,
+                                    error,
+                                    stackTrace,
+                                  ) {
+                                    return Icon(
+                                      Icons.fastfood_rounded,
+                                      size: 48,
+                                      color: AppColors.coral.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                    );
+                                  },
+                                ),
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.only(
                       left: 4,
@@ -488,8 +604,6 @@ class _IngredientPageState extends State<IngredientPage> {
                 ],
               ),
             ),
-
-            // Tanda bahan dipilih
             if (isSelected)
               Positioned(
                 top: 8,
