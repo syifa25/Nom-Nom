@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 
@@ -104,6 +103,37 @@ class RecommendationPage extends StatelessWidget {
 
                   return _buildRecipeCard(context, recipe);
                 },
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+              child: SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).popUntil(
+                      (route) => route.isFirst,
+                    );
+                  },
+                  icon: const Icon(Icons.check_circle_rounded),
+                  label: const Text(
+                    'Selesai',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.coral,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -234,190 +264,197 @@ class RecommendationPage extends StatelessWidget {
   ) {
     final ingredients =
         recipe['ingredients'] as List? ?? [];
-
     final additionalIngredients =
         recipe['additional_ingredients'] as List? ?? [];
 
     final tools = recipe['tools'] as List? ?? [];
-
     final steps = recipe['steps'] as List? ?? [];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
+      enableDrag: false,
       builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.85,
-          decoration: const BoxDecoration(
-            color: AppColors.bgPage,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(24),
-            ),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              Container(
-                width: 45,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(10),
+        return DraggableScrollableSheet(
+          initialChildSize: 0.85,
+          minChildSize: 0.45,
+          maxChildSize: 1.0,
+          expand: false,
+          snap: true,
+          snapSizes: const [0.45, 0.85, 1.0],
+          builder: (context, scrollController) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: AppColors.bgPage,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(24),
                 ),
               ),
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(24),
-                  children: [
-                    Text(
-                      recipe['name'] ?? 'Detail Resep',
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                      ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-
-                    const SizedBox(height: 10),
-
-                    Text(
-                      recipe['description'] ?? '',
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 14,
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    Row(
+                  ),
+                  Expanded(
+                    child: ListView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.all(24),
                       children: [
-                        const Icon(
-                          Icons.access_time_rounded,
-                          color: AppColors.coral,
-                        ),
-                        const SizedBox(width: 6),
-                        Text('${recipe['duration']} menit'),
-                        const SizedBox(width: 18),
-                        const Icon(
-                          Icons.people_alt_rounded,
-                          color: AppColors.coral,
-                        ),
-                        const SizedBox(width: 6),
-                        Text('${recipe['portions']} porsi'),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    _sectionTitle('Bahan yang dibutuhkan'),
-
-                    ...ingredients.map((item) {
-                      final ingredient =
-                          Map<String, dynamic>.from(item);
-
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                        leading: Icon(
-                          ingredient['available'] == true
-                              ? Icons.check_circle_rounded
-                              : Icons.add_circle_outline,
-                          color: ingredient['available'] == true
-                              ? Colors.green
-                              : AppColors.coral,
-                        ),
-                        title: Text(
-                          ingredient['name'] ?? '',
+                        Text(
+                          recipe['name'] ?? 'Detail Resep',
                           style: const TextStyle(
                             color: AppColors.textPrimary,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                        trailing: Text(
-                          ingredient['quantity'] ?? '',
+
+                        const SizedBox(height: 10),
+
+                        Text(
+                          recipe['description'] ?? '',
                           style: const TextStyle(
                             color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
                           ),
                         ),
-                      );
-                    }),
 
-                    if (additionalIngredients.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      _sectionTitle('Bahan tambahan'),
-                      ...additionalIngredients.map(
-                        (item) => ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          leading: const Icon(
-                            Icons.shopping_basket_outlined,
-                            color: AppColors.coral,
-                          ),
-                          title: Text(item.toString()),
-                        ),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
 
-                    const SizedBox(height: 16),
-
-                    _sectionTitle('Peralatan masak'),
-
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: tools.map((tool) {
-                        return Chip(
-                          label: Text(tool.toString()),
-                          backgroundColor:
-                              AppColors.coral.withValues(alpha: 0.10),
-                        );
-                      }).toList(),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    _sectionTitle('Cara memasak'),
-
-                    ...steps.asMap().entries.map((entry) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            CircleAvatar(
-                              radius: 14,
-                              backgroundColor: AppColors.coral,
-                              child: Text(
-                                '${entry.key + 1}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                            const Icon(
+                              Icons.access_time_rounded,
+                              color: AppColors.coral,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                entry.value.toString(),
-                                style: const TextStyle(
-                                  color: AppColors.textPrimary,
-                                  fontSize: 14,
-                                  height: 1.5,
-                                ),
-                              ),
+                            const SizedBox(width: 6),
+                            Text('${recipe['duration']} menit'),
+                            const SizedBox(width: 18),
+                            const Icon(
+                              Icons.people_alt_rounded,
+                              color: AppColors.coral,
                             ),
+                            const SizedBox(width: 6),
+                            Text('${recipe['portions']} porsi'),
                           ],
                         ),
-                      );
-                    }),
-                  ],
-                ),
+
+                        const SizedBox(height: 24),
+                        _sectionTitle('Bahan yang dibutuhkan'),
+
+                        ...ingredients.map((item) {
+                          final ingredient =
+                              Map<String, dynamic>.from(item);
+
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            dense: true,
+                            leading: Icon(
+                              ingredient['available'] == true
+                                  ? Icons.check_circle_rounded
+                                  : Icons.add_circle_outline,
+                              color: ingredient['available'] == true
+                                  ? Colors.green
+                                  : AppColors.coral,
+                            ),
+                            title: Text(
+                              ingredient['name'] ?? '',
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            trailing: Text(
+                              ingredient['quantity'] ?? '',
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          );
+                        }),
+
+                        if (additionalIngredients.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          _sectionTitle('Bahan tambahan'),
+                          ...additionalIngredients.map(
+                            (item) => ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              dense: true,
+                              leading: const Icon(
+                                Icons.shopping_basket_outlined,
+                                color: AppColors.coral,
+                              ),
+                              title: Text(item.toString()),
+                            ),
+                          ),
+                        ],
+
+                        const SizedBox(height: 16),
+                        _sectionTitle('Peralatan masak'),
+
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: tools.map((tool) {
+                            return Chip(
+                              label: Text(tool.toString()),
+                              backgroundColor:
+                                  AppColors.coral.withValues(alpha: 0.10),
+                            );
+                          }).toList(),
+                        ),
+
+                        const SizedBox(height: 24),
+                        _sectionTitle('Cara memasak'),
+
+                        ...steps.asMap().entries.map((entry) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                  radius: 14,
+                                  backgroundColor: AppColors.coral,
+                                  child: Text(
+                                    '${entry.key + 1}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    entry.value.toString(),
+                                    style: const TextStyle(
+                                      color: AppColors.textPrimary,
+                                      fontSize: 14,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
