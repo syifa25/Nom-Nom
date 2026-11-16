@@ -30,26 +30,26 @@ class _HomePageState extends State<HomePage> {
   ];
 
   final List<Map<String, dynamic>> recipes = [
-    {'name': 'Nasi Goreng', 'category': 'Makanan utama', 'time': '20 menit', 'rating': '4.8', 'image': 'assets/Menu/nasi_goreng.jpg'},
-    {'name': 'Mie Goreng', 'category': 'Makanan utama', 'time': '20 menit', 'rating': '4.7', 'image': 'assets/Menu/mie_goreng.jpg'},
-    {'name': 'Ayam Goreng', 'category': 'Makanan utama', 'time': '35 menit', 'rating': '4.8', 'image': 'assets/Menu/ayam_goreng.jpg'},
-    {'name': 'Ayam Bakar', 'category': 'Makanan utama', 'time': '45 menit', 'rating': '4.9', 'image': 'assets/Menu/ayam_bakar.jpg'},
-    {'name': 'Rendang', 'category': 'Makanan utama', 'time': '90 menit', 'rating': '4.9', 'image': 'assets/Menu/rendang.jpg'},
-    {'name': 'Soto Ayam', 'category': 'Makanan utama', 'time': '40 menit', 'rating': '4.8', 'image': 'assets/Menu/soto_ayam.jpg'},
-    {'name': 'Bakso', 'category': 'Makanan utama', 'time': '30 menit', 'rating': '4.7', 'image': 'assets/Menu/bakso.jpg'},
-    {'name': 'Seblak', 'category': 'Camilan', 'time': '25 menit', 'rating': '4.8', 'image': 'assets/Menu/seblak.jpg'},
-    {'name': 'Capcay', 'category': 'Makanan utama', 'time': '25 menit', 'rating': '4.7', 'image': 'assets/Menu/capcay.jpg'},
-    {'name': 'Sayur Asem', 'category': 'Makanan utama', 'time': '30 menit', 'rating': '4.6', 'image': 'assets/Menu/sayur_asem.jpg'},
-    {'name': 'Gado-Gado', 'category': 'Makanan utama', 'time': '25 menit', 'rating': '4.8', 'image': 'assets/Menu/gado_gado.jpg'},
-    {'name': 'Kwetiau Goreng', 'category': 'Makanan utama', 'time': '25 menit', 'rating': '4.7', 'image': 'assets/Menu/kwetiau_goreng.jpg'},
-    {'name': 'Spaghetti Bolognese', 'category': 'Makanan utama', 'time': '30 menit', 'rating': '4.8', 'image': 'assets/Menu/spaghetti_bolognese.jpg'},
-    {'name': 'Macaroni Schotel', 'category': 'Makanan utama', 'time': '45 menit', 'rating': '4.9', 'image': 'assets/Menu/macaroni_schotel.jpg'},
-    {'name': 'Pancake', 'category': 'Sarapan', 'time': '15 menit', 'rating': '4.9', 'image': 'assets/Menu/pancake.jpg'},
-    {'name': 'French Toast', 'category': 'Sarapan', 'time': '15 menit', 'rating': '4.7', 'image': 'assets/Menu/french_toast.jpg'},
-    {'name': 'Omelet', 'category': 'Sarapan', 'time': '10 menit', 'rating': '4.7', 'image': 'assets/Menu/omelet.jpg'},
-    {'name': 'Sup Ayam', 'category': 'Makanan utama', 'time': '35 menit', 'rating': '4.8', 'image': 'assets/Menu/sup_ayam.jpg'},
-    {'name': 'Tumis Kangkung', 'category': 'Makanan utama', 'time': '15 menit', 'rating': '4.6', 'image': 'assets/Menu/tumis_kangkung.jpg'},
-    {'name': 'Pisang Goreng', 'category': 'Camilan', 'time': '15 menit', 'rating': '4.7', 'image': 'assets/Menu/pisang_goreng.jpg'},
+    {'name': 'Nasi Goreng', 'category': 'Makanan utama', 'time': '20 menit', 'rating': '4.8', 'image': 'assets/Menu/nasi_goreng.jpg', 'description': 'Nasi goreng dengan bumbu gurih dan aroma khas kecap manis, cocok disajikan dengan telur dan pelengkap favorit.'},
+    {'name': 'Mie Goreng', 'category': 'Makanan utama', 'time': '20 menit', 'rating': '4.7', 'image': 'assets/Menu/mie_goreng.jpg', 'description': 'Mie yang ditumis bersama bumbu pilihan, sayuran, dan pelengkap sehingga menghasilkan rasa gurih yang nikmat.'},
+    {'name': 'Ayam Goreng', 'category': 'Makanan utama', 'time': '35 menit', 'rating': '4.8', 'image': 'assets/Menu/ayam_goreng.jpg', 'description': 'Potongan ayam berbumbu yang digoreng hingga matang dengan bagian luar renyah dan bagian dalam tetap juicy.'},
+    {'name': 'Ayam Bakar', 'category': 'Makanan utama', 'time': '45 menit', 'rating': '4.9', 'image': 'assets/Menu/ayam_bakar.jpg', 'description': 'Ayam yang dimarinasi dengan bumbu rempah lalu dibakar hingga harum dengan rasa manis dan gurih.'},
+    {'name': 'Rendang', 'category': 'Makanan utama', 'time': '90 menit', 'rating': '4.9', 'image': 'assets/Menu/rendang.jpg', 'description': 'Hidangan daging sapi khas Minang yang dimasak perlahan bersama santan dan rempah hingga bumbunya meresap.'},
+    {'name': 'Soto Ayam', 'category': 'Makanan utama', 'time': '40 menit', 'rating': '4.8', 'image': 'assets/Menu/soto_ayam.jpg', 'description': 'Sup ayam berkuah kuning dengan aroma rempah yang segar, biasanya disajikan bersama soun, telur, dan pelengkap.'},
+    {'name': 'Bakso', 'category': 'Makanan utama', 'time': '30 menit', 'rating': '4.7', 'image': 'assets/Menu/bakso.jpg', 'description': 'Bola daging sapi bertekstur kenyal yang disajikan dengan kuah kaldu hangat, mie, dan sayuran.'},
+    {'name': 'Seblak', 'category': 'Camilan', 'time': '25 menit', 'rating': '4.8', 'image': 'assets/Menu/seblak.jpg', 'description': 'Hidangan bercita rasa pedas dengan kerupuk kenyal, telur, sayuran, dan bumbu kencur yang khas.'},
+    {'name': 'Capcay', 'category': 'Makanan utama', 'time': '25 menit', 'rating': '4.7', 'image': 'assets/Menu/capcay.jpg', 'description': 'Tumis aneka sayuran dengan tambahan ayam dan saus gurih, cocok untuk menu sehari-hari.'},
+    {'name': 'Sayur Asem', 'category': 'Makanan utama', 'time': '30 menit', 'rating': '4.6', 'image': 'assets/Menu/sayur_asem.jpg', 'description': 'Sayur berkuah bening dengan rasa asam dan segar, berisi aneka sayuran seperti jagung, labu siam, dan kacang panjang.'},
+    {'name': 'Gado-Gado', 'category': 'Makanan utama', 'time': '25 menit', 'rating': '4.8', 'image': 'assets/Menu/gado_gado.jpg', 'description': 'Salad khas Indonesia berisi sayuran, tahu, tempe, dan telur yang disiram saus kacang gurih.'},
+    {'name': 'Kwetiau Goreng', 'category': 'Makanan utama', 'time': '25 menit', 'rating': '4.7', 'image': 'assets/Menu/kwetiau_goreng.jpg', 'description': 'Kwetiau yang ditumis dengan telur, sayuran, dan pilihan protein menggunakan bumbu gurih manis.'},
+    {'name': 'Spaghetti Bolognese', 'category': 'Makanan utama', 'time': '30 menit', 'rating': '4.8', 'image': 'assets/Menu/spaghetti_bolognese.jpg', 'description': 'Spaghetti yang disajikan dengan saus tomat dan daging sapi cincang berbumbu ala Italia.'},
+    {'name': 'Macaroni Schotel', 'category': 'Makanan utama', 'time': '45 menit', 'rating': '4.9', 'image': 'assets/Menu/macaroni_schotel.jpg', 'description': 'Olahan makaroni panggang yang dicampur susu, telur, keju, dan isian gurih hingga lembut di dalam.'},
+    {'name': 'Pancake', 'category': 'Sarapan', 'time': '15 menit', 'rating': '4.9', 'image': 'assets/Menu/pancake.jpg', 'description': 'Kue dadar tebal dan lembut dengan rasa manis, cocok disajikan bersama madu, sirup, atau buah segar.'},
+    {'name': 'French Toast', 'category': 'Sarapan', 'time': '15 menit', 'rating': '4.7', 'image': 'assets/Menu/french_toast.jpg', 'description': 'Roti tawar yang dicelup campuran telur dan susu lalu dipanggang hingga keemasan, lembut di dalam.'},
+    {'name': 'Omelet', 'category': 'Sarapan', 'time': '10 menit', 'rating': '4.7', 'image': 'assets/Menu/omelet.jpg', 'description': 'Telur dadar lembut yang dapat dipadukan dengan keju, tomat, bawang, dan bahan isian lainnya.'},
+    {'name': 'Sup Ayam', 'category': 'Makanan utama', 'time': '35 menit', 'rating': '4.8', 'image': 'assets/Menu/sup_ayam.jpg', 'description': 'Sup hangat berisi ayam, wortel, dan kentang dalam kuah kaldu ringan dengan aroma rempah.'},
+    {'name': 'Tumis Kangkung', 'category': 'Makanan utama', 'time': '15 menit', 'rating': '4.6', 'image': 'assets/Menu/tumis_kangkung.jpg', 'description': 'Kangkung yang ditumis cepat bersama bawang dan cabai sehingga tetap renyah dengan rasa gurih.'},
+    {'name': 'Pisang Goreng', 'category': 'Camilan', 'time': '15 menit', 'rating': '4.7', 'image': 'assets/Menu/pisang_goreng.jpg', 'description': 'Pisang matang berbalut adonan tepung yang digoreng hingga keemasan dan renyah, nikmat disantap hangat.'},
   ];
 
   List<Map<String, dynamic>> get filteredRecipes {
@@ -319,7 +319,16 @@ class _HomePageState extends State<HomePage> {
                                           color: brownColor,
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        recipe['description'] as String,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          height: 1.4,
+                                          color: Colors.brown,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
                                       Row(
                                         children: [
                                           const Icon(

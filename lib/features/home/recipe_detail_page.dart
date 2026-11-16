@@ -29,6 +29,7 @@ class RecipeDetailPage extends StatelessWidget {
     final time = recipe['time'] as String? ?? '-';
     final rating = recipe['rating'] as String? ?? '-';
     final imagePath = recipe['image'] as String? ?? '';
+    final description = recipe['description'] as String? ?? '';
 
     // Detail resep spesifik per menu (bahan + langkah + tips)
     final detail = RecipeData.of(name);
@@ -133,6 +134,18 @@ class RecipeDetailPage extends StatelessWidget {
                       ),
                     ],
                   ),
+
+                  if (description.isNotEmpty) ...[
+                    const SizedBox(height: 18),
+                    Text(
+                      description,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                        color: _brownColor,
+                      ),
+                    ),
+                  ],
 
                   const SizedBox(height: 18),
                   const Divider(color: Color(0xFFE8D8C8)),

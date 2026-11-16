@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nom_nom/features/home/recipe_detail_page.dart';
+
 class FavoritPage extends StatelessWidget {
   final List<Map<String, dynamic>> favoriteRecipes;
   final Function(Map<String, dynamic>)? onRemoveFavorite;
@@ -82,7 +83,7 @@ class FavoritPage extends StatelessWidget {
                       crossAxisCount: 2,
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
-                      childAspectRatio: 0.85,
+                      childAspectRatio: 0.68,
                     ),
                     itemBuilder: (context, index) {
                       final item = favoriteRecipes[index];
@@ -146,7 +147,37 @@ class FavoritPage extends StatelessWidget {
                                             color: brownColor,
                                           ),
                                         ),
-                                        const SizedBox(height: 4),
+                                        const SizedBox(height: 6),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFFFF0D5),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            item['category'] as String? ?? 'Lainnya',
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                              color: brownColor,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          item['description'] as String? ?? '',
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                            height: 1.3,
+                                            color: Colors.brown,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 7),
                                         Text(
                                           '${item['time']} · ${item['rating']} ★',
                                           style: const TextStyle(
