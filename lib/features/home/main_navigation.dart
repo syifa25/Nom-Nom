@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../center_notice.dart';
 import 'home_page.dart';
 import '../chat_page.dart';
 import '../favorite_page.dart';
@@ -22,26 +23,30 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Map<String, dynamic>> _favoriteRecipes = [];
 
   void _toggleFavorite(Map<String, dynamic> recipe) {
+    final recipeName = recipe['name'] as String;
+    final exists = _favoriteRecipes.any((item) => item['name'] == recipe['name']);
+
     setState(() {
-      final exists = _favoriteRecipes.any((item) => item['name'] == recipe['name']);
       if (exists) {
         _favoriteRecipes.removeWhere((item) => item['name'] == recipe['name']);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${recipe['name']} comot na favorit'),
-            duration: const Duration(seconds: 1),
-          ),
-        );
       } else {
         _favoriteRecipes.add(recipe);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${recipe['name']} add na favorit!'),
-            duration: const Duration(seconds: 1),
-          ),
-        );
       }
     });
+
+    if (exists) {
+      showCenterNotice(
+        context,
+        message: '$recipeName dihapus dari favorit',
+        icon: Icons.favorite_border_rounded,
+      );
+    } else {
+      showCenterNotice(
+        context,
+        message: '$recipeName ditambah ke favorit',
+        icon: Icons.favorite_rounded,
+      );
+    }
   }
 
   static const Color _orange = Color(0xFFD36327);
