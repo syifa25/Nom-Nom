@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nom_nom/service/auth_service.dart';
 import 'login_page.dart';
+import 'meal_plan_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -234,7 +235,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 Icons.calendar_month_rounded,
                 'Rencana Masak (Meal Plan)',
                 const Color(0xFF6C8EBF),
-                onTap: () {},
+                onTap: () {
+        Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const MealPlanPage()),
+        );
+        },
               ),
               _buildMenuItem(
                 Icons.settings_outlined,
