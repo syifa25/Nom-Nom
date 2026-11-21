@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:async';
 
 class AuthService {
   AuthService._internal() {
@@ -22,19 +22,8 @@ class AuthService {
 
   String? currentUserEmail;
   String? currentUserName;
-  //String? currentUserEmail; // Tambahkan variabel email ini
-
-  final List<Map<String, String>> _users = [
-    {
-      'name': 'User',
-      'email': 'user@gmail.com',
-      'password': 'Password123',
-    },
-  ];
 
   User? get currentUser => client.auth.currentUser;
-
-  //get displayName => null;
 
   String? get displayName => currentUserName;
 
@@ -63,10 +52,10 @@ class AuthService {
     required String password,
   }) async {
     final response = await client.auth.signUp(
-      email: email,
+      email: email.trim(),
       password: password,
       data: {
-        'full_name': name,
+        'full_name': name.trim(),
       },
     );
 
@@ -80,7 +69,7 @@ class AuthService {
     required String password,
   }) async {
     final response = await client.auth.signInWithPassword(
-      email: email,
+      email: email.trim(),
       password: password,
     );
 
@@ -88,9 +77,61 @@ class AuthService {
     return response;
   }
 
+  // Perbarui nama lengkap pengguna di metadata Supabase
+  Future<UserResponse> updateProfileName(String newName) async {
+    final trimmed = newName.trim();
+    if (trimmed.isEmpty) {
+      throw const AuthException('Nama tidak boleh kosong.');
+    }
+
+    final response = await client.auth.updateUser(
+      UserAttributes(
+        data: {'full_name': trimmed},
+      ),
+    );
+
+    _updateUser();
+    return response;
+  }
+
+  // Ganti password saat pengguna sedang login
+  Future<UserResponse> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final email = client.auth.currentUser?.email;
+    if (email == null || email.isEmpty) {
+      throw const AuthException('Email pengguna tidak ditemukan.');
+    }
+
+    // Verifikasi ulang password lama agar lebih aman
+    await client.auth.signInWithPassword(
+      email: email,
+      password: currentPassword,
+    );
+
+    // Perbarui password di Supabase
+    final response = await client.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+
+    _updateUser();
+    return response;
+  }
+
+  // Kirim link reset password ke email jika pengguna lupa password
+  Future<void> sendPasswordResetEmail(String email) async {
+    await client.auth.resetPasswordForEmail(email.trim());
+  }
+
   // Logout pengguna
   Future<void> logout() async {
     await client.auth.signOut();
     _updateUser();
+  }
+
+  void dispose() {
+    _authSubscription.cancel();
+    isLoggedIn.dispose();
   }
 }

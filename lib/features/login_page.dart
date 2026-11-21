@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nom_nom/service/auth_service.dart';
+import 'package:nom_nom/features/center_notice.dart';
 import 'package:nom_nom/features/home/main_navigation.dart';
+import 'package:nom_nom/service/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,23 +17,179 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  void _login() async {
+  static const _backgroundColor = Color(0xFFFFF4E5);
+  static const _primaryColor = Color(0xFFE66A3C);
+  static const _brownColor = Color(0xFF8B3E20);
+
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      showCenterNotice(
+        context,
+        message: 'Email dan password wajib diisi',
+        icon: Icons.error_outline_rounded,
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    await Future.delayed(const Duration(seconds: 1));
-    AuthService.instance.currentUserName = 'Badzlina';
+    try {
+      await AuthService.instance.login(
+        email: email,
+        password: password,
+      );
 
-    setState(() {
-      _isLoading = false;
-    });
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
 
-    if (!mounted) return;
+      final displayName = AuthService.instance.currentUserName ?? 'Pengguna';
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainNavigation()),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainNavigation()),
+      );
+
+      await Future.delayed(const Duration(milliseconds: 250));
+      if (!context.mounted) return;
+      showCenterNotice(
+        context,
+        message: 'Selamat datang kembali, $displayName',
+        icon: Icons.check_circle_rounded,
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      showCenterNotice(
+        context,
+        message: e.message,
+        icon: Icons.error_outline_rounded,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      showCenterNotice(
+        context,
+        message: 'Gagal masuk. Periksa koneksi atau akunmu',
+        icon: Icons.error_outline_rounded,
+      );
+    }
+  }
+
+  void _showForgotPasswordDialog() {
+    final resetEmailController = TextEditingController(
+      text: _emailController.text.trim(),
+    );
+    bool isSending = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: !isSending,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (innerContext, setDialogState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: const Text(
+                'Lupa Password',
+                style: TextStyle(
+                  color: _brownColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Masukkan email akunmu untuk menerima tautan reset password.',
+                    style: TextStyle(fontSize: 13, color: Colors.brown),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: resetEmailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed:
+                  isSending ? null : () => Navigator.pop(dialogContext),
+                  child: const Text('Batal'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _primaryColor,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: isSending
+                      ? null
+                      : () async {
+                    final email = resetEmailController.text.trim();
+                    if (email.isEmpty) {
+                      showCenterNotice(
+                        context,
+                        message: 'Masukkan email terlebih dahulu',
+                        icon: Icons.error_outline_rounded,
+                      );
+                      return;
+                    }
+
+                    setDialogState(() => isSending = true);
+
+                    try {
+                      await AuthService.instance
+                          .sendPasswordResetEmail(email);
+                      if (!mounted) return;
+                      Navigator.pop(dialogContext);
+                      showCenterNotice(
+                        context,
+                        message: 'Tautan reset password dikirim ke email',
+                        icon: Icons.check_circle_rounded,
+                      );
+                    } on AuthException catch (e) {
+                      if (!mounted) return;
+                      setDialogState(() => isSending = false);
+                      showCenterNotice(
+                        context,
+                        message: e.message,
+                        icon: Icons.error_outline_rounded,
+                      );
+                    } catch (_) {
+                      if (!mounted) return;
+                      setDialogState(() => isSending = false);
+                      showCenterNotice(
+                        context,
+                        message: 'Gagal mengirim tautan reset password',
+                        icon: Icons.error_outline_rounded,
+                      );
+                    }
+                  },
+                  child: Text(isSending ? 'Mengirim...' : 'Kirim'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -44,12 +202,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    const backgroundColor = Color(0xFFFFF4E5);
-    const primaryColor = Color(0xFFE66A3C);
-    const brownColor = Color(0xFF8B3E20);
-
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: _backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
@@ -64,14 +218,14 @@ class _LoginPageState extends State<LoginPage> {
                   width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: primaryColor.withValues(alpha: 0.15),
+                    color: _primaryColor.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Center(
                     child: Icon(
                       Icons.soup_kitchen_rounded,
                       size: 40,
-                      color: primaryColor,
+                      color: _primaryColor,
                     ),
                   ),
                 ),
@@ -85,7 +239,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: brownColor,
+                  color: _brownColor,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -120,9 +274,10 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: const InputDecoration(
                     hintText: 'Email',
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                    prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
+                    prefixIcon: Icon(Icons.email_outlined, color: _primaryColor),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                    contentPadding:
+                    EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   ),
                 ),
               ),
@@ -148,14 +303,32 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: const InputDecoration(
                     hintText: 'Password',
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                    prefixIcon: Icon(Icons.lock_outline, color: primaryColor),
+                    prefixIcon: Icon(Icons.lock_outline, color: _primaryColor),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                    contentPadding:
+                    EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 10),
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: _isLoading ? null : _showForgotPasswordDialog,
+                  child: const Text(
+                    'Lupa password?',
+                    style: TextStyle(
+                      color: _brownColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
 
               // Tombol Masuk
               SizedBox(
@@ -164,7 +337,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
+                    backgroundColor: _primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -204,13 +377,15 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const RegisterPage()),
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterPage(),
+                        ),
                       );
                     },
                     child: const Text(
                       'Daftar',
                       style: TextStyle(
-                        color: primaryColor,
+                        color: _primaryColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),

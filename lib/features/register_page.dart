@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../service/auth_service.dart';
-import '../theme/app_colors.dart'; // <-- Import AppColors yang kurang
-import 'home/main_navigation.dart';
+import 'package:nom_nom/features/center_notice.dart';
+import 'package:nom_nom/features/home/main_navigation.dart';
+import 'package:nom_nom/service/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../theme/app_colors.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,8 +16,11 @@ class _RegisterPageState extends State<RegisterPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String? _errorText;
   bool _isLoading = false;
+
+  static const _backgroundColor = Color(0xFFFFF4E5);
+  static const _primaryColor = Color(0xFFE66A3C);
+  static const _brownColor = Color(0xFF8B3E20);
 
   Future<void> _handleRegister() async {
     final name = _nameController.text.trim();
@@ -24,22 +28,33 @@ class _RegisterPageState extends State<RegisterPage> {
     final password = _passwordController.text;
 
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
-      setState(() => _errorText = 'Semua kolom wajib diisi');
+      showCenterNotice(
+        context,
+        message: 'Semua kolom wajib diisi',
+        icon: Icons.error_outline_rounded,
+      );
       return;
     }
 
     if (!email.contains('@') || !email.contains('.')) {
-      setState(() => _errorText = 'Format email tidak valid');
+      showCenterNotice(
+        context,
+        message: 'Format email tidak valid',
+        icon: Icons.error_outline_rounded,
+      );
       return;
     }
 
     if (password.length < 6) {
-      setState(() => _errorText = 'Password minimal 6 karakter');
+      showCenterNotice(
+        context,
+        message: 'Password minimal 6 karakter',
+        icon: Icons.error_outline_rounded,
+      );
       return;
     }
 
     setState(() {
-      _errorText = null;
       _isLoading = true;
     });
 
@@ -51,18 +66,19 @@ class _RegisterPageState extends State<RegisterPage> {
       );
 
       if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
 
       if (response.session == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Registrasi berhasil! Silakan cek email untuk verifikasi akun.',
-            ),
-            duration: Duration(seconds: 5),
-          ),
-        );
-
         Navigator.pop(context);
+        await Future.delayed(const Duration(milliseconds: 250));
+        if (!context.mounted) return;
+        showCenterNotice(
+          context,
+          message: 'Registrasi berhasil. Cek email untuk verifikasi akun',
+          icon: Icons.mark_email_read_outlined,
+        );
         return;
       }
 
@@ -72,22 +88,34 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
             (route) => false,
       );
+
+      await Future.delayed(const Duration(milliseconds: 250));
+      if (!context.mounted) return;
+      showCenterNotice(
+        context,
+        message: 'Akun berhasil dibuat. Selamat datang di NomNom!',
+        icon: Icons.check_circle_rounded,
+      );
     } on AuthException catch (e) {
       if (!mounted) return;
-
       setState(() {
-        _errorText = e.message;
+        _isLoading = false;
       });
-    } catch (e) {
+      showCenterNotice(
+        context,
+        message: e.message,
+        icon: Icons.error_outline_rounded,
+      );
+    } catch (_) {
       if (!mounted) return;
-
       setState(() {
-        _errorText = 'Registrasi gagal. Silakan coba lagi.';
+        _isLoading = false;
       });
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      showCenterNotice(
+        context,
+        message: 'Registrasi gagal. Silakan coba lagi',
+        icon: Icons.error_outline_rounded,
+      );
     }
   }
 
@@ -101,16 +129,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    const backgroundColor = Color(0xFFFFF4E5);
-    const primaryColor = Color(0xFFE66A3C);
-    const brownColor = Color(0xFF8B3E20);
-
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: _backgroundColor,
       appBar: AppBar(
-        backgroundColor: backgroundColor,
+        backgroundColor: _backgroundColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: brownColor),
+        iconTheme: const IconThemeData(color: _brownColor),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -121,7 +145,7 @@ class _RegisterPageState extends State<RegisterPage> {
               const Icon(
                 Icons.soup_kitchen,
                 size: 70,
-                color: primaryColor,
+                color: _primaryColor,
               ),
               const SizedBox(height: 12),
               const Text(
@@ -130,7 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: brownColor,
+                  color: _brownColor,
                 ),
               ),
               const SizedBox(height: 6),
@@ -140,24 +164,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: TextStyle(fontSize: 13, color: Colors.brown),
               ),
               const SizedBox(height: 28),
-
-              // Pesan Error jika ada
-              if (_errorText != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red.shade200),
-                  ),
-                  child: Text(
-                    _errorText!,
-                    style: const TextStyle(color: Colors.red, fontSize: 13),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
 
               // Field Nama
               Container(
@@ -169,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   controller: _nameController,
                   decoration: const InputDecoration(
                     labelText: 'Nama Lengkap',
-                    prefixIcon: Icon(Icons.person, color: primaryColor),
+                    prefixIcon: Icon(Icons.person, color: _primaryColor),
                     border: InputBorder.none,
                     contentPadding:
                     EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -189,7 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email, color: primaryColor),
+                    prefixIcon: Icon(Icons.email, color: _primaryColor),
                     border: InputBorder.none,
                     contentPadding:
                     EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -211,7 +217,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     labelText: 'Password',
                     hintText: 'Min. 6 karakter',
                     hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
-                    prefixIcon: Icon(Icons.lock, color: primaryColor),
+                    prefixIcon: Icon(Icons.lock, color: _primaryColor),
                     border: InputBorder.none,
                     contentPadding:
                     EdgeInsets.symmetric(horizontal: 16, vertical: 12),
